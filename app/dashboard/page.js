@@ -10,7 +10,7 @@ import {
 	Rocket,
 } from "lucide-react";
 import { supabase } from "@/utils/supabase/client";
-import { getUser } from "@/context/UserContext";
+import { getUser, logout } from "@/context/UserContext";
 import Link from "next/link";
 
 export default function Dashboard() {
@@ -24,6 +24,11 @@ export default function Dashboard() {
 	useEffect(() => {
 		loadProjects();
 	}, []);
+
+	const logoutUser = () => {
+		logout();
+		window.location.href = "/";
+	};
 
 	const loadProjects = async () => {
 		try {
@@ -88,7 +93,7 @@ export default function Dashboard() {
 
 					<button
 						onClick={() => setIsProjectModalOpen(true)}
-						className="w-full bg-slate-900 text-white px-4 py-3 rounded-lg hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl flex items-center justify-center gap-2"
+						className="w-full bg-slate-900 cursor-pointer text-white px-4 py-3 rounded-lg hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl flex items-center justify-center gap-2"
 					>
 						<Plus className="w-5 h-5" />
 						New Project
@@ -169,13 +174,13 @@ export default function Dashboard() {
 						</div>
 					</div>
 					<div className="space-y-1">
-						<button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors text-slate-700 text-sm">
+						<button className="w-full cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors text-slate-700 text-sm">
 							<Settings className="w-4 h-4" />
 							Settings
 						</button>
 						<button
-							onClick={() => signOut()}
-							className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors text-slate-700 text-sm"
+							onClick={() => logoutUser()}
+							className="w-full cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors text-slate-700 text-sm"
 						>
 							<LogOut className="w-4 h-4" />
 							Sign Out
@@ -200,7 +205,7 @@ export default function Dashboard() {
 							</p>
 							<button
 								onClick={() => setIsProjectModalOpen(true)}
-								className="bg-slate-900 text-white px-6 py-3 rounded-lg hover:bg-slate-800 transition-all font-medium shadow-lg inline-flex items-center gap-2"
+								className="bg-slate-900 cursor-pointer text-white px-6 py-3 rounded-lg hover:bg-slate-800 transition-all font-medium shadow-lg inline-flex items-center gap-2"
 							>
 								<Plus className="w-5 h-5" />
 								Create Project

@@ -13,5 +13,14 @@ export async function POST(req) {
 		return new Response(error.message, { status: 401 });
 	}
 
+	// create user profile in the database
+	const { error: profileError } = await supabase
+		.from("profiles")
+		.insert([{ auth_id: data.user.id, email: data.user.email }]);
+
+	if (profileError) {
+		return new Response(profileError.message, { status: 500 });
+	}
+
 	return new Response("Signup successful", { status: 200 });
 }

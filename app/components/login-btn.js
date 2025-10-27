@@ -84,8 +84,7 @@ export default function LoginBtn({ btn, isSignin }) {
 								);
 
 								if (res.ok) {
-									// success: adjust to your app flow
-									window.location.reload();
+									window.location.assign("/dashboard");
 								} else {
 									const text = await res.text();
 									alert(text || "Login failed");
