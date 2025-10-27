@@ -6,6 +6,7 @@ import {
 	MessageSquare,
 	Rocket,
 } from "lucide-react";
+import LoginBtn from "./components/login-btn";
 
 export default function LandingPage({ onGetStarted }) {
 	return (
@@ -69,13 +70,16 @@ export default function LandingPage({ onGetStarted }) {
 						</p>
 
 						<div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-							<button
-								onClick={onGetStarted}
-								className="bg-slate-900 cursor-pointer text-white px-8 py-4 rounded-xl hover:bg-slate-800 transition-all font-semibold text-lg shadow-xl shadow-slate-900/20 hover:shadow-2xl hover:scale-105 flex items-center gap-2"
-							>
-								Start Building
-								<Rocket className="w-5 h-5" />
-							</button>
+							<LoginBtn
+								btn={
+									<div className="bg-slate-900 cursor-pointer text-white px-8 py-4 rounded-xl hover:bg-slate-800 transition-all font-semibold text-lg shadow-xl shadow-slate-900/20 hover:shadow-2xl hover:scale-105 flex items-center gap-2">
+										Start Building
+										<Rocket className="w-5 h-5" />
+									</div>
+								}
+								isSignin={false}
+							/>
+
 							<button className="bg-white cursor-pointer text-slate-900 px-8 py-4 rounded-xl hover:bg-slate-50 transition-all font-semibold text-lg border-2 border-slate-200 hover:border-slate-300">
 								Watch Demo
 							</button>
@@ -84,7 +88,7 @@ export default function LandingPage({ onGetStarted }) {
 						<div className="flex flex-wrap items-center justify-center gap-8 text-sm text-slate-500">
 							<div className="flex items-center gap-2">
 								<div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-								<span>Free (yes really)</span>
+								<span>Free (for now)</span>
 							</div>
 						</div>
 					</div>
@@ -246,13 +250,16 @@ export default function LandingPage({ onGetStarted }) {
 							Join other SaaS builders who are shipping faster
 							with their AI product assistant.
 						</p>
-						<button
-							onClick={onGetStarted}
-							className="bg-white text-slate-900 px-10 py-5 rounded-xl cursor-pointer hover:bg-slate-100 transition-all font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 inline-flex items-center gap-2"
-						>
-							Start Building
-							<Rocket className="w-6 h-6" />
-						</button>
+
+						<LoginBtn
+							btn={
+								<div className="bg-white text-slate-900 px-10 py-5 rounded-xl cursor-pointer hover:bg-slate-100 transition-all font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 inline-flex items-center gap-2">
+									Start Building
+									<Rocket className="w-6 h-6" />
+								</div>
+							}
+							isSignin={false}
+						/>
 					</div>
 				</section>
 			</main>
@@ -261,7 +268,11 @@ export default function LandingPage({ onGetStarted }) {
 				<div className="max-w-7xl mx-auto px-6 py-12">
 					<div className="flex flex-col md:flex-row items-center justify-between gap-6">
 						<div className="flex items-center gap-2">
-							<Sparkles className="w-6 h-6 text-slate-800" />
+							<img
+								src="/logo.svg"
+								alt="SaaSMind Logo"
+								className="w-8 h-8"
+							/>
 							<span className="text-lg font-bold text-slate-900">
 								SaaSMind
 							</span>
