@@ -67,13 +67,21 @@ export default function LoginBtn({ btn, isSignin }) {
 							}
 
 							try {
-								const res = await fetch("/api/auth/login", {
-									method: "POST",
-									headers: {
-										"Content-Type": "application/json",
-									},
-									body: JSON.stringify({ email, password }),
-								});
+								const res = await fetch(
+									isSignin
+										? "/api/auth/login"
+										: "/api/auth/signup",
+									{
+										method: "POST",
+										headers: {
+											"Content-Type": "application/json",
+										},
+										body: JSON.stringify({
+											email,
+											password,
+										}),
+									}
+								);
 
 								if (res.ok) {
 									// success: adjust to your app flow
@@ -125,7 +133,7 @@ export default function LoginBtn({ btn, isSignin }) {
 								type="submit"
 								className="w-full cursor-pointer rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-95"
 							>
-								Sign in
+								{isSignin ? "Sign in" : "Create Account"}
 							</button>
 						</div>
 					</form>

@@ -7,10 +7,12 @@ import {
 	Rocket,
 } from "lucide-react";
 import LoginBtn from "./components/login-btn";
+import Header from "./components/header";
 
-export default function LandingPage({ onGetStarted }) {
+export default async function LandingPage() {
 	return (
 		<div className="min-h-screen bg-linear-to-b from-white to-slate-200">
+			<Header />
 			{/* <nav className="fixed top-0 left-0 right-0 px-4 bz-50 text-black/80">
 				<div className="mt-4 max-w-[350px] h-[40px] backdrop-blur-[20px] rounded-lg flex justify-between items-center overflow-hidden mx-auto animate-fade-in duration-300">
 					<div className="bg-surface-glass bg-[#D8DBE2]/50 backdrop-blur-md flex h-full w-full justify-between items-center pl-5 pr-1">
@@ -94,7 +96,10 @@ export default function LandingPage({ onGetStarted }) {
 					</div>
 				</section>
 
-				<section className="max-w-7xl mx-auto px-6 py-20 bg-white rounded-3xl shadow-2xl shadow-slate-900/10 mx-6 mb-20">
+				<section
+					id="features"
+					className="max-w-7xl cursor-default mx-auto px-6 py-20 bg-white rounded-3xl shadow-2xl shadow-slate-900/10 mx-6 mb-20"
+				>
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 						<div className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
 							<div className="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center mb-6">
