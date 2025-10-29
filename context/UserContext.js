@@ -30,6 +30,7 @@ export function UserProvider({ children, initialUser }) {
 
 			// 3. Merge auth + profile into unified object
 			const userData = {
+				id: authUser.id,
 				email: authUser.email ?? null,
 			};
 

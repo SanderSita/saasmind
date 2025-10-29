@@ -12,6 +12,8 @@ import {
 import { supabase } from "@/utils/supabase/client";
 import { getUser, logout } from "@/context/UserContext";
 import Link from "next/link";
+import CreateProjectDialog from "@/components/project/CreateProjectDialog";
+import Chat from "@/components/chat/Chat";
 
 export default function Dashboard() {
 	const [projects, setProjects] = useState([]);
@@ -77,8 +79,9 @@ export default function Dashboard() {
 	}
 
 	return (
+		// add top padding to avoid overlap with the fixed global header
 		<div className="min-h-screen bg-slate-50 flex">
-			<aside className="w-80 bg-white border-r border-slate-200 flex flex-col">
+			<aside className="w-80 bg-white border-r border-slate-200 flex flex-col h-[100vh]">
 				<div className="p-6 border-b border-slate-200">
 					<Link href="/" className="flex items-center gap-2 mb-6">
 						<img
@@ -120,7 +123,7 @@ export default function Dashboard() {
 								<button
 									key={project.id}
 									onClick={() => setSelectedProject(project)}
-									className={`w-full text-left p-4 rounded-lg transition-all ${
+									className={`w-full text-left p-4 rounded-lg transition-all cursor-pointer ${
 										selectedProject?.id === project.id
 											? "bg-slate-900 text-white shadow-lg"
 											: "hover:bg-slate-50 text-slate-900"
@@ -131,7 +134,7 @@ export default function Dashboard() {
 											{project.name}
 										</h4>
 										<span
-											className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ${
+											className={`text-xs px-2 py-1 rounded-full shrink-0 ${
 												selectedProject?.id ===
 												project.id
 													? "bg-white/20 text-white"
@@ -189,7 +192,7 @@ export default function Dashboard() {
 				</div>
 			</aside>
 
-			<main className="flex-1 flex flex-col">
+			<main className="flex-1 flex flex-col h-[100vh] overflow-hidden">
 				{selectedProject ? (
 					<Chat project={selectedProject} />
 				) : (
@@ -214,6 +217,13 @@ export default function Dashboard() {
 					</div>
 				)}
 			</main>
+
+			{/* Create Project Dialog */}
+			<CreateProjectDialog
+				open={isProjectModalOpen}
+				onOpenChange={setIsProjectModalOpen}
+				onCreate={handleProjectCreated}
+			/>
 		</div>
 	);
 }
