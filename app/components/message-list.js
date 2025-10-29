@@ -36,10 +36,12 @@ const Message = React.memo(({ message }) => (
 					rehypePlugins={[rehypeKatex]}
 					components={{
 						table: ({ node, ...props }) => (
-							<table
-								className="table-auto w-full mb-4 max-w-[calc(100vw-5d0px)] overflow-x-auto"
-								{...props}
-							/>
+							<div className="overflow-x-auto mb-4">
+								<table
+									className="table-auto w-full mb-4 max-w-[calc(100vw-50px)] overflow-x-auto"
+									{...props}
+								/>
+							</div>
 						),
 						p: ({ node, ...props }) => (
 							<p className="custom-paragraph" {...props} />
@@ -80,6 +82,19 @@ const Message = React.memo(({ message }) => (
 						li: ({ node, ...props }) => (
 							<li className="ml-5" {...props} />
 						),
+						input: ({ node, ...props }) => {
+							if (props.type === "checkbox") {
+								return (
+									<input
+										className="mr-2"
+										type="checkbox"
+										checked={props.checked}
+										readOnly
+									/>
+								);
+							}
+							return <input {...props} />;
+						},
 					}}
 				>
 					{preprocessLaTeX(message.content)}

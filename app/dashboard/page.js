@@ -81,7 +81,7 @@ export default function Dashboard() {
 	return (
 		// add top padding to avoid overlap with the fixed global header
 		<div className="min-h-screen bg-slate-50 flex">
-			<aside className="w-80 bg-white border-r border-slate-200 flex flex-col h-[100vh]">
+			<aside className="w-80 bg-white border-r border-slate-200 flex flex-col h-screen">
 				<div className="p-6 border-b border-slate-200">
 					<Link href="/" className="flex items-center gap-2 mb-6">
 						<img

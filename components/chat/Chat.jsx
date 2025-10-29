@@ -14,6 +14,7 @@ export default function Chat({ project }) {
 	const [loading, setLoading] = useState(false);
 	const [loadingMessages, setLoadingMessages] = useState(true);
 	const messagesEndRef = useRef(null);
+	const inputRef = useRef(null);
 
 	useEffect(() => {
 		if (project?.id) loadMessages();
@@ -47,7 +48,7 @@ export default function Chat({ project }) {
 		}
 	};
 
-	const handleSend = async () => {
+	const handleSend = async (e) => {
 		if (!input.trim() || !user) return;
 
 		const userMessage = input.trim();
@@ -88,29 +89,6 @@ export default function Chat({ project }) {
 			setMessages((prev) => [...prev, aiMsg]);
 		} catch (err) {
 			console.error("Error sending message:", err);
-			// Fallback: append local messages so UI still updates
-			// const localUserMsg = {
-			// 	id: Date.now(),
-			// 	project_id: project.id,
-			// 	user_id: user?.id || null,
-			// 	role: "user",
-			// 	content: userMessage,
-			// 	created_at: new Date().toISOString(),
-			// };
-
-			// const aiResponse = await generateAIResponse(userMessage, project);
-
-			// setMessages((prev) => [...prev, localUserMsg]);
-
-			// const localAiMsg = {
-			// 	id: Date.now() + 1,
-			// 	project_id: project.id,
-			// 	user_id: user?.id || null,
-			// 	role: "assistant",
-			// 	content: aiResponse,
-			// 	created_at: new Date().toISOString(),
-			// };
-			// setMessages((prev) => [...prev, localAiMsg]);
 		} finally {
 			setLoading(false);
 		}
@@ -145,10 +123,17 @@ export default function Chat({ project }) {
 	const handleKeyPress = (e) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			handleSend();
-			e.target.focus();
+			handleSend(e);
 		}
 	};
+
+	// When loading finishes (response shown), restore focus to the input.
+	useEffect(() => {
+		if (!loading) {
+			// schedule focus on next tick so DOM has updated and input is enabled
+			setTimeout(() => inputRef.current?.focus(), 0);
+		}
+	}, [loading]);
 
 	return (
 		// let parent control the height; allow intern</div>al scrolling with min-h-0 so flex children can overflow
@@ -246,6 +231,7 @@ export default function Chat({ project }) {
 				<div className="max-w-4xl mx-auto">
 					<div className="flex gap-3">
 						<input
+							ref={inputRef}
 							type="text"
 							value={input}
 							onChange={(e) => setInput(e.target.value)}
