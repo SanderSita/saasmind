@@ -1,6 +1,10 @@
 import { Groq } from "groq-sdk";
 
-export async function generateGroqChatCompletion(messages, project) {
+export async function generateGroqChatCompletion(
+	messages,
+	project,
+	model = "openai/gpt-oss-120b"
+) {
 	const groq = new Groq({
 		apiKey: process.env["NEXT_PUBLIC_GROQ_API_KEY"],
 	});
@@ -29,7 +33,9 @@ export async function generateGroqChatCompletion(messages, project) {
 						.join("\n")}`,
 				},
 			],
-			model: "openai/gpt-oss-120b",
+			model: model.includes("groq/compound")
+				? "openai/gpt-oss-120b"
+				: model,
 			temperature: 1,
 			max_completion_tokens: 2048,
 			top_p: 1,
@@ -49,13 +55,33 @@ export async function generateGroqChatCompletion(messages, project) {
 		];
 	}
 
-	let chatCompletion;
+	messages = addProjectContextToMessages(messages, project);
 
 	try {
-		messages = addProjectContextToMessages(messages, project);
-		chatCompletion = await groq.chat.completions.create({
+		if (model === "groq/compound") {
+			const completion = await groq.chat.completions.create({
+				model: "groq/compound",
+				messages,
+			});
+
+			const text = completion?.choices?.[0]?.message?.content ?? "";
+
+			const reasoning =
+				completion?.choices?.[0]?.message?.reasoning ?? null;
+			const executed_tools =
+				completion?.choices?.[0]?.message?.executed_tools ?? null;
+
+			return {
+				text,
+				reasoning,
+				executed_tools,
+				raw: completion,
+			};
+		}
+
+		const chatCompletion = await groq.chat.completions.create({
 			messages,
-			model: "openai/gpt-oss-120b",
+			model: model || "openai/gpt-oss-120b",
 			temperature: 1,
 			max_completion_tokens: 8192,
 			top_p: 1,
@@ -63,21 +89,24 @@ export async function generateGroqChatCompletion(messages, project) {
 			reasoning_effort: "medium",
 			stop: null,
 		});
+
+		if (chatCompletion && typeof chatCompletion.iterator === "function") {
+			const text = await getTextFromChatCompletion(chatCompletion);
+			return { text, raw: chatCompletion };
+		}
+
+		if (chatCompletion?.choices?.[0]?.message?.content) {
+			return {
+				text: chatCompletion.choices[0].message.content,
+				raw: chatCompletion,
+			};
+		}
+
+		return { text: "", raw: null };
 	} catch (err) {
-		// --- 🧩 Handle 413 payload too large error ---
 		console.error("Error generating Groq chat completion:", err);
+		return { text: "", raw: null };
 	}
-
-	// --- 🧠 Handle stream or standard completion ---
-	if (chatCompletion && typeof chatCompletion.iterator === "function") {
-		return getTextFromChatCompletion(chatCompletion);
-	}
-
-	if (chatCompletion?.choices?.[0]?.message?.content) {
-		return chatCompletion.choices[0].message.content;
-	}
-
-	return "";
 }
 
 // --- 🧾 Stream reader helper ---

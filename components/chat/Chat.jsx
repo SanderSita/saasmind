@@ -13,6 +13,7 @@ export default function Chat({ project }) {
 	const [input, setInput] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [loadingMessages, setLoadingMessages] = useState(true);
+	const [model, setModel] = useState("reasoning");
 	const messagesEndRef = useRef(null);
 	const inputRef = useRef(null);
 
@@ -109,6 +110,10 @@ export default function Chat({ project }) {
 			body: JSON.stringify({
 				messages: formattedMessages,
 				project,
+				model:
+					model === "web_search"
+						? "groq/compound"
+						: "openai/gpt-oss-120b",
 			}),
 		});
 
@@ -230,6 +235,15 @@ export default function Chat({ project }) {
 			<div className="bg-white border-t border-slate-200 px-6 py-4">
 				<div className="max-w-4xl mx-auto">
 					<div className="flex gap-3">
+						{/* Model selector (left of input) - styled to match shadcn look */}
+						<select
+							value={model}
+							onChange={(e) => setModel(e.target.value)}
+							className="shrink-0 w-44 px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-slate-900/10 outline-none"
+						>
+							<option value="reasoning">Reasoning</option>
+							<option value="web_search">Web Search</option>
+						</select>
 						<input
 							ref={inputRef}
 							type="text"
