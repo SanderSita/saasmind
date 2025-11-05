@@ -10,7 +10,7 @@ import {
 	DialogFooter,
 	DialogTrigger,
 	DialogClose,
-} from "@/components/ui/dialog";
+} from "../ui/dialog";
 import { supabase } from "@/utils/supabase/client";
 import { getUser } from "@/context/UserContext";
 

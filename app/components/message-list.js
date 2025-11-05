@@ -16,35 +16,76 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 		shouldAnimate ? "" : message.content
 	);
 	const [isTyping, setIsTyping] = useState(shouldAnimate);
-	const intervalRef = useRef(null);
+	// rafRef: stores the current requestAnimationFrame id
+	const rafRef = useRef(null);
+	// last timestamp (ms) used to calculate elapsed time between frames
+	const lastTimeRef = useRef(null);
+	// accumulated time since last char was emitted (ms)
+	const accRef = useRef(0);
+	// current index into the message content
+	const indexRef = useRef(0);
 
 	useEffect(() => {
+		// Use a requestAnimationFrame loop and an elapsed-time accumulator
+		// to decide how many characters to append per animation frame. This
+		// avoids calling setState for every single character at very small
+		// intervals (which can lead to dropped/skipped characters), while
+		// preserving high typing speed.
 		if (shouldAnimate && message.role === "assistant") {
 			setDisplayedText("");
 			setIsTyping(true);
-			let index = 0;
 			const text = message.content ?? "";
 
-			intervalRef.current = setInterval(() => {
-				if (index < text.length) {
-					setDisplayedText((prev) => prev + text.charAt(index));
-					index++;
-				} else {
-					clearInterval(intervalRef.current);
-					setIsTyping(false);
-				}
-			}, 3);
+			// ms per character target. Tune this value to make typing faster/slower.
+			const charInterval = 3; // ~3ms per character (keeps behavior similar)
 
-			return () => clearInterval(intervalRef.current);
+			indexRef.current = 0;
+			accRef.current = 0;
+			lastTimeRef.current = performance.now();
+
+			const step = (now) => {
+				const elapsed = now - (lastTimeRef.current ?? now);
+				lastTimeRef.current = now;
+				accRef.current += elapsed;
+
+				// determine how many characters we should advance given accumulated time
+				const advance = Math.floor(accRef.current / charInterval);
+				if (advance > 0) {
+					indexRef.current = Math.min(
+						text.length,
+						indexRef.current + advance
+					);
+					// keep remainder of accumulated time
+					accRef.current = accRef.current % charInterval;
+					// update state once per frame with the new substring
+					setDisplayedText(text.slice(0, indexRef.current));
+				}
+
+				if (indexRef.current < text.length) {
+					rafRef.current = requestAnimationFrame(step);
+				} else {
+					// finished
+					setIsTyping(false);
+					rafRef.current = null;
+				}
+			};
+
+			rafRef.current = requestAnimationFrame(step);
+
+			return () => {
+				if (rafRef.current) cancelAnimationFrame(rafRef.current);
+			};
 		} else {
+			// Not animating: render whole content immediately
 			setDisplayedText(message.content ?? "");
 			setIsTyping(false);
 		}
 	}, [shouldAnimate, message]);
 
 	const handleSkip = () => {
-		if (intervalRef.current) {
-			clearInterval(intervalRef.current);
+		if (rafRef.current) {
+			cancelAnimationFrame(rafRef.current);
+			rafRef.current = null;
 		}
 		setDisplayedText(message.content ?? "");
 		setIsTyping(false);
@@ -68,7 +109,22 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 						: "bg-white border border-slate-200 text-slate-900"
 				}`}
 			>
-				{/* Markdown content */}
+				{/* Image (if provided) */}
+				{message.image_url && (
+					<div className="mb-4 max-w-2xs">
+						<a
+							href={message.image_url}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<img
+								src={message.image_url}
+								alt="attachment"
+								className="rounded-md border-2 max-w-full h-auto object-contain"
+							/>
+						</a>
+					</div>
+				)}
 				<div className="max-w-[calc(100vw-50px)] overflow-x-auto">
 					<ReactMarkdown
 						remarkPlugins={[remarkGfm, remarkMath]}

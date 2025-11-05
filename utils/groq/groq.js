@@ -10,8 +10,17 @@ export async function generateGroqChatCompletion(
 	});
 
 	// --- ⚖️ Size Guard: pre-check total length ---
+	// Support content that may be a string or structured (array/object) from the client
 	const totalLength = addProjectContextToMessages(messages, project).reduce(
-		(sum, msg) => sum + msg.content.length,
+		(sum, msg) => {
+			const c = msg.content;
+			if (typeof c === "string") return sum + c.length;
+			try {
+				return sum + JSON.stringify(c).length;
+			} catch (e) {
+				return sum;
+			}
+		},
 		0
 	);
 
@@ -58,6 +67,51 @@ export async function generateGroqChatCompletion(
 	messages = addProjectContextToMessages(messages, project);
 
 	try {
+		// If the last message contains an image_url, use the image-aware chat completion
+		const found = findImageUrlInLastMessage(messages);
+		if (found) {
+			// Ensure we use an image-capable model for image inputs.
+			// Some models (or older endpoints) expect `messages[].content` to be a string;
+			// meta-llama supports structured image content. If the caller passed a
+			// non-image-capable model (e.g. `openai/gpt-oss-120b`), override it.
+			const defaultImageModel =
+				"meta-llama/llama-4-scout-17b-16e-instruct";
+			const imageModel =
+				model && /llama|meta-llama/i.test(model)
+					? model
+					: defaultImageModel;
+
+			// build user content: text part (if available) + image_url part
+			const userText = found.text || "What's in this image?";
+			const payloadMessages = [
+				{
+					role: "user",
+					content: [
+						{ type: "text", text: userText },
+						{ type: "image_url", image_url: { url: found.url } },
+					],
+				},
+			];
+
+			const chatCompletion = await groq.chat.completions.create({
+				messages: payloadMessages,
+				model: imageModel,
+				temperature: 1,
+				max_completion_tokens: 1024,
+				top_p: 1,
+				stream: false,
+				stop: null,
+			});
+
+			// Prefer structured content if present, otherwise normalize to string
+			const resultContent =
+				chatCompletion?.choices?.[0]?.message?.content ?? null;
+			if (resultContent) {
+				return { text: resultContent, raw: chatCompletion };
+			}
+			return { text: "", raw: chatCompletion };
+		}
+
 		if (model === "groq/compound") {
 			const completion = await groq.chat.completions.create({
 				model: "groq/compound",
@@ -141,4 +195,39 @@ function addProjectContextToMessages(messages, project) {
 		},
 		...messages,
 	];
+}
+
+function findImageUrlInLastMessage(messages) {
+	if (!messages || messages.length === 0) return null;
+	const last = messages[messages.length - 1];
+	if (!last || !last.content) return null;
+
+	// If content is an array of structured parts
+	const c = last.content;
+	if (Array.isArray(c)) {
+		for (const part of c) {
+			if (!part) continue;
+			if (part.type === "image_url" && part.image_url?.url)
+				return {
+					url: part.image_url.url,
+					text: c.find((p) => p.type === "text")?.text || null,
+				};
+			if (part.image_url && part.image_url.url)
+				return {
+					url: part.image_url.url,
+					text: c.find((p) => p.type === "text")?.text || null,
+				};
+		}
+	}
+
+	// If content is an object with image_url key
+	if (typeof c === "object") {
+		if (c.image_url && c.image_url.url)
+			return { url: c.image_url.url, text: c.text || null };
+		if (c.type === "image_url" && c.image_url?.url)
+			return { url: c.image_url.url, text: c.text || null };
+	}
+
+	// If content is a string, nothing to do
+	return null;
 }

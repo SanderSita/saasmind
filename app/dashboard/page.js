@@ -12,8 +12,8 @@ import {
 import { supabase } from "@/utils/supabase/client";
 import { getUser, logout } from "@/context/UserContext";
 import Link from "next/link";
-import CreateProjectDialog from "@/components/project/CreateProjectDialog";
-import Chat from "@/components/chat/Chat";
+import CreateProjectDialog from "../components/project/CreateProjectDialog";
+import Chat from "../components/chat/Chat";
 
 export default function Dashboard() {
 	const [projects, setProjects] = useState([]);
