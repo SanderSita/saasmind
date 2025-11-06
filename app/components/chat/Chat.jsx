@@ -7,6 +7,17 @@ import { uploadImage } from "./actions";
 import { getUser } from "@/context/UserContext";
 import "katex/dist/katex.min.css";
 import MessageList from "@/app/components/message-list";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function Chat({ project }) {
 	const user = getUser();
@@ -14,6 +25,8 @@ export default function Chat({ project }) {
 	const [input, setInput] = useState("");
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [previewUrl, setPreviewUrl] = useState(null);
+	const [fileName, setFileName] = useState("");
+	const [fileSize, setFileSize] = useState("");
 	const [isDragActive, setIsDragActive] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [loadingMessages, setLoadingMessages] = useState(true);
@@ -204,6 +217,11 @@ export default function Chat({ project }) {
 					if (file) {
 						setSelectedImage(file);
 						setPreviewUrl(URL.createObjectURL(file));
+						setFileName(file.name);
+						console.log("File name:", file.name);
+						setFileSize(file.size);
+						console.log("File size:", file.size);
+
 						// clear the native file input so same file can be selected later
 						if (fileInputRef.current)
 							fileInputRef.current.value = "";
@@ -289,33 +307,7 @@ export default function Chat({ project }) {
 			ref={containerRef}
 			className="flex-1 flex flex-col min-h-0 relative"
 		>
-			{/* <header className="bg-white border-b border-slate-200 px-6 py-4">
-				<div className="flex items-center justify-between">
-					<div>
-						<h1 className="text-2xl font-bold text-slate-900">
-							{project.name}
-						</h1>
-						<p className="text-slate-600 text-sm">
-							{project.description
-								? project.description.slice(0, 100) + "..."
-								: "No description"}
-						</p>
-					</div>
-					<span
-						className={`px-3 py-1 rounded-full text-sm font-medium ${
-							project.status === "idea"
-								? "bg-blue-100 text-blue-700"
-								: project.status === "development"
-								? "bg-amber-100 text-amber-700"
-								: "bg-emerald-100 text-emerald-700"
-						}`}
-					>
-						{project.status}
-					</span>
-				</div>
-			</header> */}
-
-			<div className="flex-1 overflow-y-auto bg-slate-50 px-6 py-8 pb-28">
+			<div className="flex-1 overflow-y-auto bg-slate-50 py-8 pb-42">
 				{loadingMessages ? (
 					<div className="flex items-center justify-center h-full">
 						<Sparkles className="w-8 h-8 text-slate-400 animate-pulse" />
@@ -380,7 +372,26 @@ export default function Chat({ project }) {
 
 			<div className="fixed bottom-0 left-0 right-0 z-30">
 				<div
-					className="bg-white border border-slate-200 px-6 py-4 rounded-2xl mb-4"
+					className="bg-slate-50 h-6 z-20"
+					style={
+						footerPos.width
+							? {
+									position: "absolute",
+									left: `${footerPos.left}px`,
+									width: `${footerPos.width}px`,
+									bottom: 0,
+							  }
+							: {
+									position: "absolute",
+									left: 0,
+									right: 0,
+									bottom: 0,
+							  }
+					}
+				></div>
+				<div
+					className="bg-white border border-slate-200 px-3 py-3 rounded-2xl mb-3 z-50"
+					onClick={() => inputRef.current.focus()}
 					style={
 						footerPos.width
 							? {
@@ -397,8 +408,67 @@ export default function Chat({ project }) {
 							  }
 					}
 				>
+					{/* Preview */}
+					{previewUrl && (
+						<Card className="w-full mb-3 flex items-center gap-3 p-2 rounded-xl border bg-muted/30">
+							{/* Thumbnail */}
+							<div className="relative h-12 w-12 shrink-0">
+								<img
+									src={previewUrl}
+									alt="Preview"
+									className="h-12 w-12 rounded-md object-cover"
+								/>
+								<Button
+									size="icon"
+									variant="secondary"
+									onClick={() => {
+										setSelectedImage(null);
+										setPreviewUrl(null);
+										if (fileInputRef.current)
+											fileInputRef.current.value = "";
+									}}
+									className="absolute -top-1 -right-1 h-4 w-4 rounded-full p-0 cursor-pointer"
+								>
+									✕
+								</Button>
+							</div>
+
+							{/* File info */}
+							<div className="flex flex-col min-w-0">
+								<span className="text-sm font-medium truncate">
+									{fileName || "Uploaded image"}
+								</span>
+								<span className="text-xs text-muted-foreground">
+									{fileSize
+										? `${(fileSize / 1024).toFixed(1)} KB`
+										: ""}
+								</span>
+							</div>
+						</Card>
+					)}
+
+					<textarea
+						ref={inputRef}
+						type="text"
+						value={input}
+						onChange={(e) => {
+							setInput(e.target.value);
+							// Auto-resize logic:
+							e.target.style.height = "auto";
+							e.target.style.height = `${Math.min(
+								e.target.scrollHeight,
+								128
+							)}px`; // 128px = max-h-32
+						}}
+						onKeyDown={handleKeyPress}
+						onPaste={handlePaste}
+						disabled={loading}
+						placeholder="Ask me anything about your SaaS..."
+						className="w-full flex-1 mb-3 outline-none transition-all disabled:opacity-50 max-h-32 resize-none"
+						rows="1"
+					/>
 					<div
-						className={`flex gap-3 items-center ${
+						className={`flex gap-3 justify-between ${
 							isDragActive
 								? "ring-2 ring-slate-400/40 rounded-xl"
 								: ""
@@ -408,77 +478,60 @@ export default function Chat({ project }) {
 						onDragLeave={handleDragLeave}
 						onDrop={handleDrop}
 					>
-						{/* Model selector (left of input) - styled to match shadcn look */}
-						<select
+						<Select
 							value={model}
-							onChange={(e) => setModel(e.target.value)}
-							className="shrink-0 w-44 px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-slate-900/10 outline-none"
+							onValueChange={(val) => setModel(val)}
 						>
-							<option value="reasoning">Reasoning</option>
-							<option value="web_search">Web Search</option>
-						</select>
-						{/* Image picker */}
-						<div className="shrink-0">
-							<input
-								type="file"
-								accept="image/*"
-								id="chat-image-input"
-								ref={fileInputRef}
-								className="hidden"
-								onChange={async (e) => {
-									const file = e.target.files?.[0] ?? null;
-									if (!file) return;
-									setSelectedImage(file);
-									const url = URL.createObjectURL(file);
-									setPreviewUrl(url);
-								}}
-							/>
-							<label
-								htmlFor="chat-image-input"
-								className="cursor-pointer p-2 rounded-lg hover:bg-slate-100"
-							>
-								<Image className="w-5 h-5 text-slate-600" />
-							</label>
-						</div>
-						{/* Preview */}
-						{previewUrl && (
-							<div className="shrink-0 relative">
-								<img
-									src={previewUrl}
-									alt="preview"
-									className="w-12 h-12 rounded-md object-cover border"
-								/>
-								<button
-									onClick={() => {
-										setSelectedImage(null);
-										setPreviewUrl(null);
-										if (fileInputRef.current)
-											fileInputRef.current.value = "";
+							<SelectTrigger className="shrink-0 p-1 rounded-md border border-slate-300 bg-white focus:ring-2 focus:ring-slate-900/10 outline-none w-[160px]">
+								<SelectValue placeholder="Select model" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectGroup>
+									<SelectLabel>Model</SelectLabel>
+									<SelectItem value="reasoning">
+										Reasoning
+									</SelectItem>
+									<SelectItem value="web_search">
+										Web Search
+									</SelectItem>
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+
+						<div className="flex gap-3 items-center">
+							{/* Image picker */}
+							<div className="shrink-0">
+								<input
+									type="file"
+									accept="image/*"
+									id="chat-image-input"
+									ref={fileInputRef}
+									className="hidden"
+									onChange={async (e) => {
+										const file =
+											e.target.files?.[0] ?? null;
+										if (!file) return;
+										setSelectedImage(file);
+										const url = URL.createObjectURL(file);
+										setPreviewUrl(url);
 									}}
-									className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow"
+								/>
+								<label
+									htmlFor="chat-image-input"
+									className="cursor-pointer rounded-lg hover:bg-slate-100"
 								>
-									<span className="text-xs">✕</span>
-								</button>
+									<Image className="w-5 h-5 text-slate-600" />
+								</label>
 							</div>
-						)}
-						<input
-							ref={inputRef}
-							type="text"
-							value={input}
-							onChange={(e) => setInput(e.target.value)}
-							onKeyDown={handleKeyPress}
-							onPaste={handlePaste}
-							disabled={loading}
-							placeholder="Ask me anything about your SaaS..."
-							className="flex-1 px-4 py-3 rounded-xl border border-slate-300 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all disabled:opacity-50"
-						/>
-						<button
-							onClick={handleSend}
-							disabled={loading || !input.trim()}
-							className="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-						>
-							<Send className="w-5 h-5" />
-						</button>
+
+							<button
+								onClick={handleSend}
+								disabled={loading || !input.trim()}
+								className="bg-slate-900 text-white p-2.5 rounded-sm hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+							>
+								<Send className="w-3 h-3" />
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

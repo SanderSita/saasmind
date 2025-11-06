@@ -97,13 +97,13 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 				message.role === "user" ? "justify-end" : "justify-start"
 			}`}
 		>
-			{message.role === "assistant" && (
+			{/* {message.role === "assistant" && (
 				<div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
 					<Bot className="w-5 h-5 text-white" />
 				</div>
-			)}
+			)} */}
 			<div
-				className={`relative max-w-2xl px-6 py-4 rounded-2xl ${
+				className={`relative px-6 py-4 rounded-2xl ${
 					message.role === "user"
 						? "bg-slate-900 text-white"
 						: "bg-white border border-slate-200 text-slate-900"
@@ -263,9 +263,9 @@ const MessageList = React.memo(({ messages, loading, endRef }) => {
 			))}
 			{loading && (
 				<div className="flex gap-4 justify-start">
-					<div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
+					{/* <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
 						<Bot className="w-5 h-5 text-white" />
-					</div>
+					</div> */}
 					<div className="max-w-2xl px-6 py-4 rounded-2xl bg-white border border-slate-200">
 						<div className="flex gap-2">
 							<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
