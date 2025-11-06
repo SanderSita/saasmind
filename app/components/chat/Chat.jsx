@@ -21,6 +21,8 @@ export default function Chat({ project }) {
 	const messagesEndRef = useRef(null);
 	const inputRef = useRef(null);
 	const fileInputRef = useRef(null);
+	const containerRef = useRef(null);
+	const [footerPos, setFooterPos] = useState({ left: 0, width: 0 });
 
 	useEffect(() => {
 		if (project?.id) loadMessages();
@@ -259,10 +261,35 @@ export default function Chat({ project }) {
 		}
 	}, [loading]);
 
+	// measure the chat container so the fixed footer's inner container can align to it
+	useEffect(() => {
+		const update = () => {
+			const el = containerRef.current;
+			if (!el) return;
+			const rect = el.getBoundingClientRect();
+			setFooterPos({
+				left: rect.left + window.scrollX,
+				width: rect.width,
+			});
+		};
+
+		update();
+		window.addEventListener("resize", update);
+		const ro = new ResizeObserver(update);
+		ro.observe(document.body);
+
+		return () => {
+			window.removeEventListener("resize", update);
+			ro.disconnect();
+		};
+	}, []);
+
 	return (
-		// let parent control the height; allow intern</div>al scrolling with min-h-0 so flex children can overflow
-		<div className="flex-1 flex flex-col min-h-0">
-			<header className="bg-white border-b border-slate-200 px-6 py-4">
+		<div
+			ref={containerRef}
+			className="flex-1 flex flex-col min-h-0 relative"
+		>
+			{/* <header className="bg-white border-b border-slate-200 px-6 py-4">
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="text-2xl font-bold text-slate-900">
@@ -286,9 +313,9 @@ export default function Chat({ project }) {
 						{project.status}
 					</span>
 				</div>
-			</header>
+			</header> */}
 
-			<div className="flex-1 overflow-y-auto bg-slate-50 px-6 py-8">
+			<div className="flex-1 overflow-y-auto bg-slate-50 px-6 py-8 pb-28">
 				{loadingMessages ? (
 					<div className="flex items-center justify-center h-full">
 						<Sparkles className="w-8 h-8 text-slate-400 animate-pulse" />
@@ -351,8 +378,25 @@ export default function Chat({ project }) {
 				)}
 			</div>
 
-			<div className="bg-white border-t border-slate-200 px-6 py-4">
-				<div className="max-w-4xl mx-auto">
+			<div className="fixed bottom-0 left-0 right-0 z-30">
+				<div
+					className="bg-white border border-slate-200 px-6 py-4 rounded-2xl mb-4"
+					style={
+						footerPos.width
+							? {
+									position: "absolute",
+									left: `${footerPos.left}px`,
+									width: `${footerPos.width}px`,
+									bottom: 0,
+							  }
+							: {
+									position: "absolute",
+									left: 0,
+									right: 0,
+									bottom: 0,
+							  }
+					}
+				>
 					<div
 						className={`flex gap-3 items-center ${
 							isDragActive
