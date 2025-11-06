@@ -3,12 +3,72 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import { Bot, User, FastForward } from "lucide-react";
+import { Bot, User, FastForward, Copy, Check } from "lucide-react";
 
 function preprocessLaTeX(content) {
 	return content
 		.replace(/\\\[(.*?)\\\]/gs, (_, eq) => `$$${eq}$$`)
 		.replace(/\\\((.*?)\\\)/gs, (_, eq) => `$${eq}$`);
+}
+
+function CodeBlock({ children, ...props }) {
+	const [copied, setCopied] = useState(false);
+	const preRef = useRef(null);
+
+	const handleCopy = async () => {
+		const text = preRef.current?.innerText ?? "";
+		if (!text) return;
+
+		try {
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				await navigator.clipboard.writeText(text);
+			} else {
+				// fallback
+				const ta = document.createElement("textarea");
+				ta.value = text;
+				document.body.appendChild(ta);
+				ta.select();
+				document.execCommand("copy");
+				document.body.removeChild(ta);
+			}
+
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1500);
+		} catch (e) {
+			// ignore failures silently for now
+		}
+	};
+
+	return (
+		<div className="relative mb-4 group">
+			<button
+				onClick={handleCopy}
+				title={copied ? "Copied" : "Copy code"}
+				aria-pressed={copied}
+				className="absolute cursor-pointer top-2 right-2 z-10 px-2 py-1 rounded bg-white/90 hover:bg-white transition border border-slate-200 shadow-sm flex items-center gap-2 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto"
+			>
+				{copied ? (
+					<>
+						<Check className="w-4 h-4 text-slate-700" />
+						<span className="text-sm text-slate-700">Copied</span>
+					</>
+				) : (
+					<>
+						<Copy className="w-4 h-4 text-slate-700" />
+						<span className="text-sm text-slate-700">Copy</span>
+					</>
+				)}
+			</button>
+
+			<pre
+				ref={preRef}
+				className="bg-slate-100 p-4 rounded-lg overflow-x-auto"
+				{...props}
+			>
+				{children}
+			</pre>
+		</div>
+	);
 }
 
 const Message = React.memo(({ message, isLast, shouldAnimate }) => {
@@ -106,7 +166,7 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 				className={`relative px-6 py-4 rounded-2xl ${
 					message.role === "user"
 						? "bg-slate-900 text-white"
-						: "bg-white border border-slate-200 text-slate-900"
+						: " text-slate-900"
 				}`}
 			>
 				{/* Image (if provided) */}
@@ -147,11 +207,8 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 							hr: ({ node, ...props }) => (
 								<hr className="my-10" {...props} />
 							),
-							pre: ({ node, ...props }) => (
-								<pre
-									className="bg-slate-100 p-4 rounded-lg overflow-x-auto mb-4"
-									{...props}
-								/>
+							pre: ({ node, children, ...props }) => (
+								<CodeBlock {...props}>{children}</CodeBlock>
 							),
 							code: ({ node, ...props }) => (
 								<code
@@ -227,12 +284,6 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 					</button>
 				)}
 			</div>
-
-			{message.role === "user" && (
-				<div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
-					<User className="w-5 h-5 text-slate-700" />
-				</div>
-			)}
 		</div>
 	);
 });
