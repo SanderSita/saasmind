@@ -48,6 +48,7 @@ export function AppSidebar({
 	onCreateProject,
 	onCreateChat,
 	onDeleteChat,
+	onRenameChat,
 	onOpenProjectContext,
 	...props
 }) {
@@ -123,6 +124,7 @@ export function AppSidebar({
 								onSelect={onSelectChat}
 								onCreate={onCreateChat}
 								onDelete={onDeleteChat}
+								onRename={onRenameChat}
 							/>
 						)}
 					</>

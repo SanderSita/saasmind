@@ -148,6 +148,39 @@ export default function Dashboard() {
 		}
 	};
 
+	// Rename a chat (persisted) or update a transient chat locally
+	const renameChat = async (chat, newName) => {
+		try {
+			if (!chat?.id) {
+				// transient chat -> update locally by reference or index
+				setChats((prev) =>
+					prev.map((c) => (c === chat ? { ...c, name: newName } : c))
+				);
+				if (selectedChat === chat)
+					setSelectedChat({ ...chat, name: newName });
+				return { ...chat, name: newName };
+			}
+
+			const { data, error } = await supabase
+				.from("chats")
+				.update({ name: newName })
+				.eq("id", chat.id)
+				.select()
+				.single();
+
+			if (error) throw error;
+
+			setChats((prev) => prev.map((c) => (c.id === chat.id ? data : c)));
+			if (selectedChat && selectedChat.id === chat.id) {
+				setSelectedChat(data);
+			}
+			return data;
+		} catch (err) {
+			console.error("Error renaming chat:", err);
+			return null;
+		}
+	};
+
 	const getStatusColor = (status) => {
 		switch (status) {
 			case "idea":
@@ -193,6 +226,7 @@ export default function Dashboard() {
 					}}
 					onCreateChat={() => startTransientChat()}
 					onDeleteChat={(c) => deleteChat(c)}
+					onRenameChat={(c, name) => renameChat(c, name)}
 					onOpenProjectContext={() => setView("project")}
 				/>
 

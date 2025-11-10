@@ -43,10 +43,14 @@ export function NavChats({
 	onSelect,
 	onCreate,
 	onDelete,
+	onRename,
 }) {
 	const { isMobile } = useSidebar();
 	const [confirmOpen, setConfirmOpen] = useState(false);
 	const [pendingChat, setPendingChat] = useState(null);
+	const [renameOpen, setRenameOpen] = useState(false);
+	const [renameName, setRenameName] = useState("");
+	const [renameLoading, setRenameLoading] = useState(false);
 
 	function openConfirm(e, chat) {
 		e.preventDefault();
@@ -55,10 +59,38 @@ export function NavChats({
 		setConfirmOpen(true);
 	}
 
+	function openRename(e, chat) {
+		e.preventDefault();
+		e.stopPropagation();
+		setPendingChat(chat);
+		setRenameName(chat?.name || "");
+		setRenameOpen(true);
+	}
+
 	function confirmDelete() {
 		if (onDelete && pendingChat) onDelete(pendingChat);
 		setConfirmOpen(false);
 		setPendingChat(null);
+	}
+
+	async function confirmRename() {
+		if (!pendingChat) return;
+		const newName = (renameName || "").trim();
+		if (!newName) return;
+		try {
+			setRenameLoading(true);
+			if (onRename) {
+				// onRename may be async; await it if it returns a promise
+				await onRename(pendingChat, newName);
+			}
+			// close
+			setRenameOpen(false);
+			setPendingChat(null);
+		} catch (err) {
+			console.error("Rename failed", err);
+		} finally {
+			setRenameLoading(false);
+		}
 	}
 
 	return (
@@ -103,7 +135,9 @@ export function NavChats({
 								side={isMobile ? "bottom" : "right"}
 								align={isMobile ? "end" : "start"}
 							>
-								<DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={(e) => openRename(e, chat)}
+								>
 									<span>Rename</span>
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
@@ -163,6 +197,53 @@ export function NavChats({
 							onClick={confirmDelete}
 						>
 							Delete Chat
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Rename dialog */}
+			<Dialog
+				open={renameOpen}
+				onOpenChange={(open) => {
+					setRenameOpen(open);
+					if (!open) {
+						setPendingChat(null);
+						setRenameName("");
+					}
+				}}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Rename Chat</DialogTitle>
+						<DialogDescription>
+							Provide a new name for the chat.
+						</DialogDescription>
+					</DialogHeader>
+
+					<div className="mt-2">
+						<input
+							autoFocus
+							value={renameName}
+							onChange={(e) => setRenameName(e.target.value)}
+							className="w-full rounded-md border px-3 py-2 bg-white text-slate-900"
+							placeholder="Chat name"
+						/>
+					</div>
+
+					<DialogFooter>
+						<DialogClose asChild>
+							<Button variant="outline" size="sm">
+								Cancel
+							</Button>
+						</DialogClose>
+						<Button
+							variant="default"
+							size="sm"
+							onClick={confirmRename}
+							disabled={renameLoading}
+						>
+							{renameLoading ? "Renaming..." : "Rename"}
 						</Button>
 					</DialogFooter>
 				</DialogContent>
