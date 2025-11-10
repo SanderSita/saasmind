@@ -8,7 +8,7 @@ export async function POST(request) {
 		const prompt = {
 			role: "user",
 			content:
-				"Provide a concise title (6 words max) that summarizes this conversation. Return only the title, no extra commentary.",
+				"Provide a concise title (6 words max) that summarizes this conversation. Return only the title, no extra commentary. Default to 'Untitled Chat' if unable to generate a title. Dont mention that it's a title.",
 		};
 
 		const msgs = [...(messages || []), prompt];

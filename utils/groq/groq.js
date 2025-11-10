@@ -191,7 +191,15 @@ function addProjectContextToMessages(messages, project) {
 	return [
 		{
 			role: "user",
-			content: `<context> project name: ${project.name}, project description: ${project.description}, project status: ${project.status}, target market: ${project.target_market} </context>`,
+			content: `<context> project name: ${
+				project.name
+			}, project description: ${project.description}, project status: ${
+				project.status
+			}, target market: ${
+				project.target_market
+			}, <customcontext> ${JSON.stringify(
+				project.custom_context
+			)} </customcontext> </context>`,
 		},
 		...messages,
 	];

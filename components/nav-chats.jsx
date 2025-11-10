@@ -54,9 +54,6 @@ export function NavChats({
 												: ""
 										}
 									>
-										<span className="text-xs text-muted-foreground mr-2">
-											💬
-										</span>
 										<span>{chat.name}</span>
 									</button>
 								</SidebarMenuButton>

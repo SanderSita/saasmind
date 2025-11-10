@@ -40,7 +40,7 @@ function CodeBlock({ children, ...props }) {
 	};
 
 	return (
-		<div className="relative mb-4 group">
+		<div className="relative mb-4 group max-w-2xl">
 			<button
 				onClick={handleCopy}
 				title={copied ? "Copied" : "Copy code"}
@@ -185,7 +185,7 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 						</a>
 					</div>
 				)}
-				<div className="max-w-[calc(100vw-50px)] overflow-x-auto">
+				<div className="max-w-[calc(100vw-50px)] overflow-x-auto overflow-y-hidden">
 					<ReactMarkdown
 						remarkPlugins={[remarkGfm, remarkMath]}
 						rehypePlugins={[rehypeKatex]}

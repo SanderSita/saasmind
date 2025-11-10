@@ -39,11 +39,17 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 
 	useEffect(() => {
 		// If a persisted chat is selected, load messages. If a transient chat is selected, clear messages.
-		if (!selectedChat) return;
+		if (!selectedChat) {
+			setMessages([]);
+			setLoadingMessages(false);
+			return;
+		}
 		if (selectedChat?.id) {
 			loadMessages();
 		} else {
+			// transient chat (no id) — clear messages and mark messages as loaded
 			setMessages([]);
+			setLoadingMessages(false);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedChat?.id]);

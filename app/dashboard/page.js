@@ -7,6 +7,7 @@ import { useUser, logout } from "@/context/UserContext";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 import Chat from "../components/chat/Chat";
 import { AppSidebar } from "@/components/app-sidebar";
+import ProjectContext from "@/components/project/ProjectContext";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function Dashboard() {
@@ -14,6 +15,7 @@ export default function Dashboard() {
 	const [selectedProject, setSelectedProject] = useState(null);
 	const [chats, setChats] = useState([]);
 	const [selectedChat, setSelectedChat] = useState(null);
+	const [view, setView] = useState("chat"); // 'chat' | 'project'
 	const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
 
@@ -26,6 +28,11 @@ export default function Dashboard() {
 	useEffect(() => {
 		if (selectedProject?.id) loadChats();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [selectedProject?.id]);
+
+	useEffect(() => {
+		// whenever a new project is selected, default back to chat view
+		if (selectedProject) setView("chat");
 	}, [selectedProject?.id]);
 
 	const logoutUser = () => {
@@ -107,7 +114,9 @@ export default function Dashboard() {
 			isTemp: true,
 			created_at: new Date().toISOString(),
 		};
+		// select the transient chat and switch the main view to chat
 		setSelectedChat(temp);
+		setView("chat");
 	};
 
 	const getStatusColor = (status) => {
@@ -142,28 +151,40 @@ export default function Dashboard() {
 					user={{ name: user?.email, email: user?.email }}
 					selectedProject={selectedProject}
 					projects={projects}
-					onSelectProject={setSelectedProject}
+					onSelectProject={(p) => {
+						setSelectedProject(p);
+						setView("chat");
+					}}
 					onCreateProject={() => setIsProjectModalOpen(true)}
 					chats={chats}
 					selectedChat={selectedChat}
-					onSelectChat={setSelectedChat}
+					onSelectChat={(c) => {
+						setSelectedChat(c);
+						setView("chat");
+					}}
 					onCreateChat={() => startTransientChat()}
+					onOpenProjectContext={() => setView("project")}
 				/>
 
 				<main className="flex-1 flex items-center justify-center min-h-screen overflow-hidden">
 					{selectedProject ? (
 						<div className="w-full flex items-center justify-center">
-							<div className="w-full max-w-4xl px-4">
-								<Chat
-									project={selectedProject}
-									selectedChat={selectedChat}
-									onChatSaved={(chat) => {
-										// when chat is saved by Chat component, add it to list and select it
-										setChats((prev) => [chat, ...prev]);
-										setSelectedChat(chat);
-									}}
-								/>
-							</div>
+							{view === "chat" ? (
+								<div className="w-full max-w-4xl px-4">
+									<Chat
+										project={selectedProject}
+										selectedChat={selectedChat}
+										onChatSaved={(chat) => {
+											// when chat is saved by Chat component, add it to list and select it
+											setChats((prev) => [chat, ...prev]);
+											setSelectedChat(chat);
+										}}
+									/>
+								</div>
+							) : (
+								// project context view
+								<ProjectContext project={selectedProject} />
+							)}
 						</div>
 					) : (
 						<div className="flex-1 flex items-center justify-center">
