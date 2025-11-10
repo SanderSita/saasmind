@@ -119,6 +119,35 @@ export default function Dashboard() {
 		setView("chat");
 	};
 
+	// Delete a chat (persisted) or remove a transient chat from state
+	const deleteChat = async (chat) => {
+		try {
+			// transient chat (no id) -> remove locally
+			if (!chat?.id) {
+				setChats((prev) => prev.filter((c) => c !== chat));
+				if (selectedChat === chat) setSelectedChat(null);
+				return;
+			}
+
+			const { error } = await supabase
+				.from("chats")
+				.delete()
+				.eq("id", chat.id);
+
+			if (error) throw error;
+
+			setChats((prev) => prev.filter((c) => c.id !== chat.id));
+			if (selectedChat && selectedChat.id === chat.id) {
+				// select next available chat or clear
+				const next =
+					(chats || []).find((c) => c.id !== chat.id) || null;
+				setSelectedChat(next);
+			}
+		} catch (err) {
+			console.error("Error deleting chat:", err);
+		}
+	};
+
 	const getStatusColor = (status) => {
 		switch (status) {
 			case "idea":
@@ -163,6 +192,7 @@ export default function Dashboard() {
 						setView("chat");
 					}}
 					onCreateChat={() => startTransientChat()}
+					onDeleteChat={(c) => deleteChat(c)}
 					onOpenProjectContext={() => setView("project")}
 				/>
 
