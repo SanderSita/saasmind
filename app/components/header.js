@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import LoginBtn from "./login-btn";
-import { getUser } from "@/context/UserContext";
+import { useUser } from "@/context/UserContext";
 
 export default function Header() {
-	const user = getUser();
+	const user = useUser();
 
 	return (
 		<nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">

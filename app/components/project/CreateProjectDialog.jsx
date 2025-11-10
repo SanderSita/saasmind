@@ -12,7 +12,7 @@ import {
 	DialogClose,
 } from "../ui/dialog";
 import { supabase } from "@/utils/supabase/client";
-import { getUser } from "@/context/UserContext";
+import { useUser } from "@/context/UserContext";
 
 export default function CreateProjectDialog({ open, onOpenChange, onCreate }) {
 	const [name, setName] = useState("");
@@ -22,7 +22,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onCreate }) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const user = getUser();
+	const user = useUser();
 
 	const reset = () => {
 		setName("");

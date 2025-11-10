@@ -9,32 +9,40 @@ export function UserProvider({ children, initialUser }) {
 	const [user, setUser] = useState(initialUser || null);
 
 	useEffect(() => {
-		// Keep user in sync with Supabase session changes (login/logout)
+		// 1️⃣ Load existing session on mount
+		const loadUser = async () => {
+			const {
+				data: { session },
+			} = await supabase.auth.getSession();
+			if (session?.user) {
+				const { data: profile } = await supabase
+					.from("users")
+					.select("*")
+					.eq("auth_id", session.user.id)
+					.single();
+
+				setUser({
+					id: session.user.id,
+					email: session.user.email ?? null,
+					profile,
+				});
+			}
+		};
+
+		loadUser();
+
+		// 2️⃣ Keep user in sync with auth changes
 		const {
 			data: { subscription },
-		} = supabase.auth.onAuthStateChange(async (_event, session) => {
+		} = supabase.auth.onAuthStateChange((_event, session) => {
 			if (!session?.user) {
 				setUser(null);
-				return;
+			} else {
+				setUser({
+					id: session.user.id,
+					email: session.user.email ?? null,
+				});
 			}
-
-			// 1. Get the auth user (id + email)
-			const authUser = session.user;
-
-			// 2. Fetch their profile from your `users` table
-			const { data: profile } = await supabase
-				.from("users")
-				.select("*")
-				.eq("auth_id", authUser.id)
-				.single();
-
-			// 3. Merge auth + profile into unified object
-			const userData = {
-				id: authUser.id,
-				email: authUser.email ?? null,
-			};
-
-			setUser(userData);
 		});
 
 		return () => subscription.unsubscribe();
@@ -43,10 +51,10 @@ export function UserProvider({ children, initialUser }) {
 	return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
 
-export function getUser() {
+export function useUser() {
 	return useContext(UserContext);
 }
 
-export function logout() {
-	supabase.auth.signOut();
+export async function logout() {
+	await supabase.auth.signOut();
 }

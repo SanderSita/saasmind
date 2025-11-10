@@ -1,9 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./components/header";
 import { UserProvider } from "@/context/UserContext";
 import { createClient } from "@/utils/supabase/server";
-import { getUser } from "@/utils/supabase/server";
+import { useUser } from "@/utils/supabase/server";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -22,7 +21,7 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
 	let userData = null;
-	const user = getUser();
+	const user = useUser();
 
 	if (user) {
 		const supabase = await createClient();

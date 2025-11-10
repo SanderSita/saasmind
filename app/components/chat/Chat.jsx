@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Send, Sparkles, Image } from "lucide-react";
 import { supabase } from "@/utils/supabase/client";
 import { uploadImage } from "./actions";
-import { getUser } from "@/context/UserContext";
+import { useUser } from "@/context/UserContext";
 import "katex/dist/katex.min.css";
 import MessageList from "@/app/components/message-list";
 import {
@@ -19,8 +19,8 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export default function Chat({ project }) {
-	const user = getUser();
+export default function Chat({ project, selectedChat, onChatSaved }) {
+	const user = useUser();
 	const [messages, setMessages] = useState([]);
 	const [input, setInput] = useState("");
 	const [selectedImage, setSelectedImage] = useState(null);
@@ -38,9 +38,15 @@ export default function Chat({ project }) {
 	const [footerPos, setFooterPos] = useState({ left: 0, width: 0 });
 
 	useEffect(() => {
-		if (project?.id) loadMessages();
+		// If a persisted chat is selected, load messages. If a transient chat is selected, clear messages.
+		if (!selectedChat) return;
+		if (selectedChat?.id) {
+			loadMessages();
+		} else {
+			setMessages([]);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [project?.id]);
+	}, [selectedChat?.id]);
 
 	useEffect(() => {
 		scrollToBottom();
@@ -78,7 +84,7 @@ export default function Chat({ project }) {
 			const { data, error } = await supabase
 				.from("chat_messages")
 				.select("*")
-				.eq("project_id", project.id)
+				.eq("chat_id", selectedChat.id)
 				.order("created_at", { ascending: true });
 
 			if (error) throw error;
@@ -90,6 +96,8 @@ export default function Chat({ project }) {
 			setLoadingMessages(false);
 		}
 	};
+
+	// Chat list and creation are handled by the parent (Dashboard) and passed via props.
 
 	const handleSend = async (e) => {
 		if (!input.trim() || !user) return;
@@ -107,10 +115,124 @@ export default function Chat({ project }) {
 			}
 
 			// Insert user message (include image_url if present) into DB for chat history
+			// If the selected chat is transient (no id), do not persist until after we get AI response and a title
+			if (!selectedChat || !selectedChat.id) {
+				// Keep messages locally until we create the chat
+				const localUserMsg = {
+					id: `local-${Date.now()}-user`,
+					chat_id: null,
+					user_id: user.id || null,
+					role: "user",
+					content: userMessage,
+					image_url: imageUrl,
+					created_at: new Date().toISOString(),
+				};
+				setMessages((prev) => [...prev, localUserMsg]);
+
+				const aiResponse = await generateAIResponse(
+					userMessage,
+					project,
+					imageUrl
+				);
+
+				const localAiMsg = {
+					id: `local-${Date.now()}-ai`,
+					chat_id: null,
+					user_id: null,
+					role: "assistant",
+					content: aiResponse,
+					created_at: new Date().toISOString(),
+				};
+				setMessages((prev) => [...prev, localAiMsg]);
+
+				// Ask groq for a short chat title based on the conversation
+				try {
+					const res = await fetch("/api/chat/title", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							messages: [
+								...messages,
+								{
+									role: localUserMsg.role,
+									content: localUserMsg.content,
+								},
+								{
+									role: localAiMsg.role,
+									content: localAiMsg.content,
+								},
+							],
+							project,
+						}),
+					});
+					let title = null;
+					if (res.ok) {
+						const { title: t } = await res.json();
+						title = (t || "").trim();
+						// sanitize and shorten
+						if (title.includes("\n")) title = title.split("\n")[0];
+						if (title.length > 60)
+							title = title.slice(0, 60) + "...";
+					}
+
+					// Persist chat and messages
+					const { data: createdChat, error: chatErr } = await supabase
+						.from("chats")
+						.insert({
+							project_id: project.id,
+							name: title || "Chat",
+							created_at: new Date().toISOString(),
+						})
+						.select()
+						.single();
+
+					if (chatErr) throw chatErr;
+
+					// Insert both messages into DB with the new chat id
+					const inserts = [
+						{
+							chat_id: createdChat.id,
+							user_id: localUserMsg.user_id,
+							role: localUserMsg.role,
+							content: localUserMsg.content,
+							image_url: localUserMsg.image_url,
+							created_at: localUserMsg.created_at,
+						},
+						{
+							chat_id: createdChat.id,
+							user_id: null,
+							role: localAiMsg.role,
+							content: localAiMsg.content,
+							created_at: localAiMsg.created_at,
+						},
+					];
+
+					const { data: savedMsgs, error: msgsErr } = await supabase
+						.from("chat_messages")
+						.insert(inserts)
+						.select();
+
+					if (msgsErr) throw msgsErr;
+
+					// replace local messages with saved ones
+					setMessages(savedMsgs || []);
+
+					// notify parent so it shows the chat in sidebar
+					if (onChatSaved) onChatSaved(createdChat);
+				} catch (err) {
+					console.error(
+						"Error creating chat and saving messages:",
+						err
+					);
+				}
+				return;
+			}
+
+			// Persisted chat path (existing behavior)
 			const { data: userMsg, error: userError } = await supabase
 				.from("chat_messages")
 				.insert({
-					project_id: project.id,
+					chat_id: selectedChat.id,
 					user_id: user.id || null,
 					role: "user",
 					content: userMessage,
@@ -132,7 +254,7 @@ export default function Chat({ project }) {
 			const { data: aiMsg, error: aiError } = await supabase
 				.from("chat_messages")
 				.insert({
-					project_id: project.id,
+					chat_id: selectedChat.id,
 					user_id: user.id || null,
 					role: "assistant",
 					content: aiResponse,
@@ -478,11 +600,14 @@ export default function Chat({ project }) {
 						onDragLeave={handleDragLeave}
 						onDrop={handleDrop}
 					>
+						{/* Model selector */}
+
+						{/* Model selector */}
 						<Select
 							value={model}
 							onValueChange={(val) => setModel(val)}
 						>
-							<SelectTrigger className="shrink-0 p-1 rounded-md border border-slate-300 bg-white focus:ring-2 focus:ring-slate-900/10 outline-none w-[160px]">
+							<SelectTrigger className="shrink-0 p-1 rounded-md border border-slate-300 bg-white focus:ring-2 focus:ring-slate-900/10 outline-none w-40">
 								<SelectValue placeholder="Select model" />
 							</SelectTrigger>
 							<SelectContent>

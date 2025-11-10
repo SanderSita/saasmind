@@ -1,7 +1,6 @@
 "use client";
 
-import { Folder, Forward, MoreHorizontal, Trash2 } from "lucide-react";
-
+import { Plus, MoreHorizontal, Trash2 } from "lucide-react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -19,44 +18,53 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 
-export function NavProjects({ projects, onSelect }) {
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+export function NavChats({
+	chats = [],
+	selectedChat = null,
+	onSelect,
+	onCreate,
+}) {
 	const { isMobile } = useSidebar();
 
 	return (
 		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
-			<SidebarGroupLabel>Projects</SidebarGroupLabel>
+			<SidebarGroupLabel>Chats</SidebarGroupLabel>
 			<SidebarMenu>
-				{projects.map((item) => (
-					<SidebarMenuItem key={item.name}>
-						<SidebarMenuButton asChild>
-							<Tooltip>
-								<TooltipTrigger asChild>
+				{chats.map((chat) => (
+					<SidebarMenuItem key={chat.id}>
+						<Tooltip delayDuration={500}>
+							<TooltipTrigger asChild>
+								<SidebarMenuButton asChild>
 									<button
 										onClick={(e) => {
 											if (onSelect) {
 												e.preventDefault();
-												onSelect(item);
+												onSelect(chat);
 											}
 										}}
+										className={
+											chat.id === selectedChat?.id
+												? "font-semibold"
+												: ""
+										}
 									>
-										{item.icon ? (
-											(() => {
-												const Icon = item.icon;
-												return <Icon />;
-											})()
-										) : (
-											<div className="size-4 rounded-md bg-slate-200 flex items-center justify-center text-xs">
-												{item.name?.[0]?.toUpperCase()}
-											</div>
-										)}
-										<span>{item.name}</span>
+										<span className="text-xs text-muted-foreground mr-2">
+											💬
+										</span>
+										<span>{chat.name}</span>
 									</button>
-								</TooltipTrigger>
-								<TooltipContent>
-									<p>{item.description}</p>
-								</TooltipContent>
-							</Tooltip>
-						</SidebarMenuButton>
+								</SidebarMenuButton>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>{chat.name}</p>
+							</TooltipContent>
+						</Tooltip>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<SidebarMenuAction showOnHover>
@@ -70,26 +78,24 @@ export function NavProjects({ projects, onSelect }) {
 								align={isMobile ? "end" : "start"}
 							>
 								<DropdownMenuItem>
-									<Folder className="text-muted-foreground" />
-									<span>View Project</span>
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<Forward className="text-muted-foreground" />
-									<span>Share Project</span>
+									<span>Rename</span>
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
 								<DropdownMenuItem>
 									<Trash2 className="text-muted-foreground" />
-									<span>Delete Project</span>
+									<span>Delete Chat</span>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</SidebarMenuItem>
 				))}
 				<SidebarMenuItem>
-					<SidebarMenuButton className="text-sidebar-foreground/70">
-						<MoreHorizontal className="text-sidebar-foreground/70" />
-						<span>More</span>
+					<SidebarMenuButton
+						className="text-sidebar-foreground/70"
+						onClick={() => onCreate && onCreate()}
+					>
+						<Plus className="text-sidebar-foreground/70" />
+						<span>Create Chat</span>
 					</SidebarMenuButton>
 				</SidebarMenuItem>
 			</SidebarMenu>

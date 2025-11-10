@@ -16,6 +16,7 @@ import {
 
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
+import { NavChats } from "@/components/nav-chats";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import {
@@ -28,127 +29,11 @@ import {
 
 // This is sample data.
 const data = {
-	user: {
-		name: "shadcn",
-		email: "m@example.com",
-		avatar: "/avatars/shadcn.jpg",
-	},
-	teams: [
-		{
-			name: "Acme Inc",
-			logo: GalleryVerticalEnd,
-			plan: "Enterprise",
-		},
-		{
-			name: "Acme Corp.",
-			logo: AudioWaveform,
-			plan: "Startup",
-		},
-		{
-			name: "Evil Corp.",
-			logo: Command,
-			plan: "Free",
-		},
-	],
-	navMain: [
-		{
-			title: "Playground",
-			url: "#",
-			icon: SquareTerminal,
-			isActive: true,
-			items: [
-				{
-					title: "History",
-					url: "#",
-				},
-				{
-					title: "Starred",
-					url: "#",
-				},
-				{
-					title: "Settings",
-					url: "#",
-				},
-			],
-		},
-		{
-			title: "Models",
-			url: "#",
-			icon: Bot,
-			items: [
-				{
-					title: "Genesis",
-					url: "#",
-				},
-				{
-					title: "Explorer",
-					url: "#",
-				},
-				{
-					title: "Quantum",
-					url: "#",
-				},
-			],
-		},
-		{
-			title: "Documentation",
-			url: "#",
-			icon: BookOpen,
-			items: [
-				{
-					title: "Introduction",
-					url: "#",
-				},
-				{
-					title: "Get Started",
-					url: "#",
-				},
-				{
-					title: "Tutorials",
-					url: "#",
-				},
-				{
-					title: "Changelog",
-					url: "#",
-				},
-			],
-		},
-		{
-			title: "Settings",
-			url: "#",
-			icon: Settings2,
-			items: [
-				{
-					title: "General",
-					url: "#",
-				},
-				{
-					title: "Team",
-					url: "#",
-				},
-				{
-					title: "Billing",
-					url: "#",
-				},
-				{
-					title: "Limits",
-					url: "#",
-				},
-			],
-		},
-	],
-	projects: [
-		{
-			name: "Design Engineering",
-			url: "#",
-			icon: Frame,
-		},
-		{
-			name: "Travel",
-			url: "#",
-			icon: Map,
-		},
-	],
+	user: {},
+	teams: [],
+	navMain: [],
+
+	projects: [],
 };
 
 export function AppSidebar({
@@ -156,7 +41,11 @@ export function AppSidebar({
 	user = null,
 	selectedProject = null,
 	onSelectProject,
+	chats = [],
+	selectedChat = null,
+	onSelectChat,
 	onCreateProject,
+	onCreateChat,
 	...props
 }) {
 	// Use sample nav from generated data for now. Keep navMain sample data.
@@ -174,10 +63,18 @@ export function AppSidebar({
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={navMain} />
-				<NavProjects
+				{/* <NavProjects
 					projects={projects.length ? projects : data.projects}
 					onSelect={onSelectProject}
-				/>
+				/> */}
+				{selectedProject && (
+					<NavChats
+						chats={chats}
+						selectedChat={selectedChat}
+						onSelect={onSelectChat}
+						onCreate={onCreateChat}
+					/>
+				)}
 			</SidebarContent>
 			<SidebarFooter>
 				<NavUser user={user || data.user} />

@@ -1,17 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-	Sparkles,
-	Plus,
-	MessageSquare,
-	LogOut,
-	Settings,
-	Rocket,
-} from "lucide-react";
+import { Sparkles, Plus, MessageSquare } from "lucide-react";
 import { supabase } from "@/utils/supabase/client";
-import { getUser, logout } from "@/context/UserContext";
-import Link from "next/link";
+import { useUser, logout } from "@/context/UserContext";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 import Chat from "../components/chat/Chat";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -20,14 +12,21 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 export default function Dashboard() {
 	const [projects, setProjects] = useState([]);
 	const [selectedProject, setSelectedProject] = useState(null);
+	const [chats, setChats] = useState([]);
+	const [selectedChat, setSelectedChat] = useState(null);
 	const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
 
-	const user = getUser();
+	const user = useUser();
 
 	useEffect(() => {
 		loadProjects();
 	}, []);
+
+	useEffect(() => {
+		if (selectedProject?.id) loadChats();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [selectedProject?.id]);
 
 	const logoutUser = () => {
 		logout();
@@ -54,6 +53,61 @@ export default function Dashboard() {
 		setProjects([project, ...projects]);
 		setSelectedProject(project);
 		setIsProjectModalOpen(false);
+	};
+
+	const loadChats = async () => {
+		try {
+			const { data, error } = await supabase
+				.from("chats")
+				.select("*")
+				.eq("project_id", selectedProject.id)
+				.order("created_at", { ascending: true });
+
+			if (error) throw error;
+			if (data && data.length > 0) {
+				setChats(data);
+				setSelectedChat(data[0]);
+			} else {
+				setChats([]);
+				setSelectedChat(null);
+			}
+		} catch (err) {
+			console.error("Error loading chats:", err);
+		}
+	};
+
+	// Persist a new chat to the DB and add to the list
+	const persistChat = async (name) => {
+		try {
+			const { data, error } = await supabase
+				.from("chats")
+				.insert({
+					project_id: selectedProject.id,
+					name: name || `Chat ${new Date().toLocaleString()}`,
+					created_at: new Date().toISOString(),
+				})
+				.select()
+				.single();
+
+			if (error) throw error;
+			setChats((prev) => [...prev, data]);
+			setSelectedChat(data);
+			return data;
+		} catch (err) {
+			console.error("Error creating chat:", err);
+			return null;
+		}
+	};
+
+	// Start a transient (unsaved) chat: not persisted until first message is sent
+	const startTransientChat = () => {
+		const temp = {
+			id: null,
+			name: "New chat",
+			isTemp: true,
+			created_at: new Date().toISOString(),
+		};
+		setSelectedChat(temp);
 	};
 
 	const getStatusColor = (status) => {
@@ -90,13 +144,25 @@ export default function Dashboard() {
 					projects={projects}
 					onSelectProject={setSelectedProject}
 					onCreateProject={() => setIsProjectModalOpen(true)}
+					chats={chats}
+					selectedChat={selectedChat}
+					onSelectChat={setSelectedChat}
+					onCreateChat={() => startTransientChat()}
 				/>
 
 				<main className="flex-1 flex items-center justify-center min-h-screen overflow-hidden">
 					{selectedProject ? (
 						<div className="w-full flex items-center justify-center">
 							<div className="w-full max-w-4xl px-4">
-								<Chat project={selectedProject} />
+								<Chat
+									project={selectedProject}
+									selectedChat={selectedChat}
+									onChatSaved={(chat) => {
+										// when chat is saved by Chat component, add it to list and select it
+										setChats((prev) => [chat, ...prev]);
+										setSelectedChat(chat);
+									}}
+								/>
 							</div>
 						</div>
 					) : (

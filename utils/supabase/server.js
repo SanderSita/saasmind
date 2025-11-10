@@ -30,7 +30,7 @@ export async function createClient() {
 	);
 }
 
-export async function getUser() {
+export async function useUser() {
 	const supabase = await createClient();
 	const {
 		data: { user },
