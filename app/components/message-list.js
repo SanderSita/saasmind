@@ -76,6 +76,8 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 		shouldAnimate ? "" : message.content
 	);
 	const [isTyping, setIsTyping] = useState(shouldAnimate);
+	const [copied, setCopied] = useState(false);
+	const copyTimeoutRef = useRef(null);
 	// rafRef: stores the current requestAnimationFrame id
 	const rafRef = useRef(null);
 	// last timestamp (ms) used to calculate elapsed time between frames
@@ -150,6 +152,39 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 		setDisplayedText(message.content ?? "");
 		setIsTyping(false);
 	};
+
+	const handleCopyMessage = async () => {
+		const text = message.content ?? "";
+		if (!text) return;
+
+		try {
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				await navigator.clipboard.writeText(text);
+			} else {
+				const ta = document.createElement("textarea");
+				ta.value = text;
+				document.body.appendChild(ta);
+				ta.select();
+				document.execCommand("copy");
+				document.body.removeChild(ta);
+			}
+
+			setCopied(true);
+			if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+			copyTimeoutRef.current = setTimeout(() => {
+				setCopied(false);
+				copyTimeoutRef.current = null;
+			}, 1000);
+		} catch (e) {
+			// ignore copy errors
+		}
+	};
+
+	useEffect(() => {
+		return () => {
+			if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+		};
+	}, []);
 
 	return (
 		<div
@@ -259,19 +294,37 @@ const Message = React.memo(({ message, isLast, shouldAnimate }) => {
 					</ReactMarkdown>
 				</div>
 
-				{/* Time */}
-				<p
-					className={`text-xs mt-2 ${
-						message.role === "user"
-							? "text-slate-400"
-							: "text-slate-500"
-					}`}
-				>
-					{new Date(message.created_at).toLocaleTimeString([], {
-						hour: "2-digit",
-						minute: "2-digit",
-					})}
-				</p>
+				{/* show copy icon */}
+				<div className="mt-2">
+					{message.role != "user" && !isTyping && (
+						<button
+							onClick={handleCopyMessage}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault();
+									handleCopyMessage();
+								}
+							}}
+							title={copied ? "Copied" : "Copy message"}
+							aria-label={copied ? "Copied" : "Copy message"}
+							className="inline-flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-slate-100 transition"
+						>
+							{copied ? (
+								<>
+									<Check className="w-4 h-4 text-slate-700" />
+									<span className="sr-only">Copied</span>
+								</>
+							) : (
+								<>
+									<Copy className="w-4 h-4 text-slate-700" />
+									<span className="sr-only">
+										Copy message
+									</span>
+								</>
+							)}
+						</button>
+					)}
+				</div>
 
 				{/* Skip button */}
 				{isTyping && (
