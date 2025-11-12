@@ -200,6 +200,7 @@ const Message = React.memo(
 
 		return (
 			<div
+				data-message-id={message.id}
 				className={`flex gap-4 ${
 					message.role === "user" ? "justify-end" : "justify-start"
 				}`}
@@ -368,6 +369,7 @@ const Message = React.memo(
 										);
 										window.dispatchEvent(ev);
 									}}
+									title={"Add to context"}
 									type="button"
 								>
 									<BookOpen className="w-4 h-4 text-slate-700" />
@@ -405,6 +407,73 @@ const MessageList = React.memo(
 		const [dialogContent, setDialogContent] = useState("");
 		const [saving, setSaving] = useState(false);
 		const [saveError, setSaveError] = useState(null);
+
+		// selection UI state
+		const [selectionText, setSelectionText] = useState("");
+		const [selectionRect, setSelectionRect] = useState(null);
+
+		useEffect(() => {
+			const handleMouseUp = (e) => {
+				const sel = window.getSelection();
+				if (!sel || sel.isCollapsed) {
+					setSelectionText("");
+					setSelectionRect(null);
+					return;
+				}
+
+				const text = sel.toString().trim();
+				if (!text) {
+					setSelectionText("");
+					setSelectionRect(null);
+					return;
+				}
+
+				// ensure selection is inside a message element
+				let node = sel.anchorNode;
+				if (!node) return;
+				if (node.nodeType === 3) node = node.parentElement;
+				let msgEl = node;
+				while (msgEl && !msgEl.dataset?.messageId)
+					msgEl = msgEl.parentElement;
+				if (!msgEl) {
+					setSelectionText("");
+					setSelectionRect(null);
+					return;
+				}
+
+				const messageId = msgEl.dataset.messageId;
+				const found = (messages || []).find(
+					(m) => String(m.id) === String(messageId)
+				);
+				if (!found || found.role === "user") {
+					// only allow adding assistant or non-user content
+					setSelectionText("");
+					setSelectionRect(null);
+					return;
+				}
+
+				// find bounding rect for selection
+				const range = sel.getRangeAt(0);
+				const rect = range.getBoundingClientRect();
+				setSelectionText(text);
+				setSelectionRect(rect);
+			};
+
+			const handleKey = (e) => {
+				// clear on Escape
+				if (e.key === "Escape") {
+					setSelectionText("");
+					setSelectionRect(null);
+				}
+			};
+
+			window.addEventListener("mouseup", handleMouseUp);
+			window.addEventListener("keyup", handleKey);
+			return () => {
+				window.removeEventListener("mouseup", handleMouseUp);
+				window.removeEventListener("keyup", handleKey);
+			};
+		}, []);
 
 		useEffect(() => {
 			const listener = (e) => {
@@ -505,6 +574,29 @@ const MessageList = React.memo(
 					</div>
 				)}
 				<div ref={endRef} />
+
+				{/* Floating 'Add to context' button shown when user selects text */}
+				{selectionText && selectionRect && (
+					<button
+						className="fixed z-50 bg-slate-900 text-white px-2 py-1 rounded text-sm shadow-lg"
+						style={{
+							top: selectionRect.top + window.scrollY - 40,
+							left: selectionRect.left + window.scrollX,
+						}}
+						onClick={() => {
+							setDialogTitle(
+								`context from ${selectedChat?.name ?? "chat"}`
+							);
+							setDialogContent(selectionText);
+							setDialogOpen(true);
+							// clear selection UI
+							setSelectionText("");
+							setSelectionRect(null);
+						}}
+					>
+						Add to context
+					</button>
+				)}
 
 				{/* Dialog for saving message as project custom context */}
 				<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
