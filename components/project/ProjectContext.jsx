@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { preprocessLaTeX } from "@/utils/latex/preprocessLaTeX";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 
 export default function ProjectContext({ project }) {
 	const [editing, setEditing] = useState(false);
@@ -245,7 +250,19 @@ export default function ProjectContext({ project }) {
 														whiteSpace: "pre-wrap",
 													}}
 												>
-													{p.value}
+													<ReactMarkdown
+														remarkPlugins={[
+															remarkGfm,
+															remarkMath,
+														]}
+														rehypePlugins={[
+															rehypeKatex,
+														]}
+													>
+														{preprocessLaTeX(
+															p.value
+														)}
+													</ReactMarkdown>
 												</div>
 											</div>
 										))}

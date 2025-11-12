@@ -227,7 +227,25 @@ export default function Dashboard() {
 					onCreateChat={() => startTransientChat()}
 					onDeleteChat={(c) => deleteChat(c)}
 					onRenameChat={(c, name) => renameChat(c, name)}
-					onOpenProjectContext={() => setView("project")}
+					onOpenProjectContext={async () => {
+						// Refresh project data from the DB before opening project context
+						if (!selectedProject || !selectedProject.id)
+							return setView("project");
+						try {
+							const { data, error } = await supabase
+								.from("projects")
+								.select("*")
+								.eq("id", selectedProject.id)
+								.single();
+							if (!error && data) {
+								setSelectedProject(data);
+							}
+						} catch (err) {
+							console.error("Error refreshing project:", err);
+						} finally {
+							setView("project");
+						}
+					}}
 				/>
 
 				<main className="flex-1 flex items-center justify-center min-h-screen overflow-hidden">

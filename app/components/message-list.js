@@ -1,15 +1,24 @@
+"use client";
+
 import React, { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import { Bot, User, FastForward, Copy, Check } from "lucide-react";
-
-function preprocessLaTeX(content) {
-	return content
-		.replace(/\\\[(.*?)\\\]/gs, (_, eq) => `$$${eq}$$`)
-		.replace(/\\\((.*?)\\\)/gs, (_, eq) => `$${eq}$`);
-}
+import { Bot, User, FastForward, Copy, Check, BookOpen } from "lucide-react";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogFooter,
+	DialogDescription,
+	DialogTrigger,
+} from "@/app/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/utils/supabase/client";
+import { preprocessLaTeX } from "@/utils/latex/preprocessLaTeX";
 
 function CodeBlock({ children, ...props }) {
 	const [copied, setCopied] = useState(false);
@@ -71,317 +80,499 @@ function CodeBlock({ children, ...props }) {
 	);
 }
 
-const Message = React.memo(({ message, isLast, shouldAnimate }) => {
-	const [displayedText, setDisplayedText] = useState(
-		shouldAnimate ? "" : message.content
-	);
-	const [isTyping, setIsTyping] = useState(shouldAnimate);
-	const [copied, setCopied] = useState(false);
-	const copyTimeoutRef = useRef(null);
-	// rafRef: stores the current requestAnimationFrame id
-	const rafRef = useRef(null);
-	// last timestamp (ms) used to calculate elapsed time between frames
-	const lastTimeRef = useRef(null);
-	// accumulated time since last char was emitted (ms)
-	const accRef = useRef(0);
-	// current index into the message content
-	const indexRef = useRef(0);
+const Message = React.memo(
+	({ message, isLast, shouldAnimate, project, chat }) => {
+		const [displayedText, setDisplayedText] = useState(
+			shouldAnimate ? "" : message.content
+		);
+		const [isTyping, setIsTyping] = useState(shouldAnimate);
+		const [copied, setCopied] = useState(false);
+		const copyTimeoutRef = useRef(null);
+		// rafRef: stores the current requestAnimationFrame id
+		const rafRef = useRef(null);
+		// last timestamp (ms) used to calculate elapsed time between frames
+		const lastTimeRef = useRef(null);
+		// accumulated time since last char was emitted (ms)
+		const accRef = useRef(0);
+		// current index into the message content
+		const indexRef = useRef(0);
 
-	useEffect(() => {
-		// Use a requestAnimationFrame loop and an elapsed-time accumulator
-		// to decide how many characters to append per animation frame. This
-		// avoids calling setState for every single character at very small
-		// intervals (which can lead to dropped/skipped characters), while
-		// preserving high typing speed.
-		if (shouldAnimate && message.role === "assistant") {
-			setDisplayedText("");
-			setIsTyping(true);
-			const text = message.content ?? "";
+		useEffect(() => {
+			// Use a requestAnimationFrame loop and an elapsed-time accumulator
+			// to decide how many characters to append per animation frame. This
+			// avoids calling setState for every single character at very small
+			// intervals (which can lead to dropped/skipped characters), while
+			// preserving high typing speed.
+			if (shouldAnimate && message.role === "assistant") {
+				setDisplayedText("");
+				setIsTyping(true);
+				const text = message.content ?? "";
 
-			// ms per character target. Tune this value to make typing faster/slower.
-			const charInterval = 3; // ~3ms per character (keeps behavior similar)
+				// ms per character target. Tune this value to make typing faster/slower.
+				const charInterval = 3; // ~3ms per character (keeps behavior similar)
 
-			indexRef.current = 0;
-			accRef.current = 0;
-			lastTimeRef.current = performance.now();
+				indexRef.current = 0;
+				accRef.current = 0;
+				lastTimeRef.current = performance.now();
 
-			const step = (now) => {
-				const elapsed = now - (lastTimeRef.current ?? now);
-				lastTimeRef.current = now;
-				accRef.current += elapsed;
+				const step = (now) => {
+					const elapsed = now - (lastTimeRef.current ?? now);
+					lastTimeRef.current = now;
+					accRef.current += elapsed;
 
-				// determine how many characters we should advance given accumulated time
-				const advance = Math.floor(accRef.current / charInterval);
-				if (advance > 0) {
-					indexRef.current = Math.min(
-						text.length,
-						indexRef.current + advance
-					);
-					// keep remainder of accumulated time
-					accRef.current = accRef.current % charInterval;
-					// update state once per frame with the new substring
-					setDisplayedText(text.slice(0, indexRef.current));
-				}
+					// determine how many characters we should advance given accumulated time
+					const advance = Math.floor(accRef.current / charInterval);
+					if (advance > 0) {
+						indexRef.current = Math.min(
+							text.length,
+							indexRef.current + advance
+						);
+						// keep remainder of accumulated time
+						accRef.current = accRef.current % charInterval;
+						// update state once per frame with the new substring
+						setDisplayedText(text.slice(0, indexRef.current));
+					}
 
-				if (indexRef.current < text.length) {
-					rafRef.current = requestAnimationFrame(step);
-				} else {
-					// finished
-					setIsTyping(false);
-					rafRef.current = null;
-				}
-			};
+					if (indexRef.current < text.length) {
+						rafRef.current = requestAnimationFrame(step);
+					} else {
+						// finished
+						setIsTyping(false);
+						rafRef.current = null;
+					}
+				};
 
-			rafRef.current = requestAnimationFrame(step);
+				rafRef.current = requestAnimationFrame(step);
 
-			return () => {
-				if (rafRef.current) cancelAnimationFrame(rafRef.current);
-			};
-		} else {
-			// Not animating: render whole content immediately
+				return () => {
+					if (rafRef.current) cancelAnimationFrame(rafRef.current);
+				};
+			} else {
+				// Not animating: render whole content immediately
+				setDisplayedText(message.content ?? "");
+				setIsTyping(false);
+			}
+		}, [shouldAnimate, message]);
+
+		const handleSkip = () => {
+			if (rafRef.current) {
+				cancelAnimationFrame(rafRef.current);
+				rafRef.current = null;
+			}
 			setDisplayedText(message.content ?? "");
 			setIsTyping(false);
-		}
-	}, [shouldAnimate, message]);
-
-	const handleSkip = () => {
-		if (rafRef.current) {
-			cancelAnimationFrame(rafRef.current);
-			rafRef.current = null;
-		}
-		setDisplayedText(message.content ?? "");
-		setIsTyping(false);
-	};
-
-	const handleCopyMessage = async () => {
-		const text = message.content ?? "";
-		if (!text) return;
-
-		try {
-			if (navigator.clipboard && navigator.clipboard.writeText) {
-				await navigator.clipboard.writeText(text);
-			} else {
-				const ta = document.createElement("textarea");
-				ta.value = text;
-				document.body.appendChild(ta);
-				ta.select();
-				document.execCommand("copy");
-				document.body.removeChild(ta);
-			}
-
-			setCopied(true);
-			if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-			copyTimeoutRef.current = setTimeout(() => {
-				setCopied(false);
-				copyTimeoutRef.current = null;
-			}, 1000);
-		} catch (e) {
-			// ignore copy errors
-		}
-	};
-
-	useEffect(() => {
-		return () => {
-			if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
 		};
-	}, []);
 
-	return (
-		<div
-			className={`flex gap-4 ${
-				message.role === "user" ? "justify-end" : "justify-start"
-			}`}
-		>
-			{/* {message.role === "assistant" && (
+		const handleCopyMessage = async () => {
+			const text = message.content ?? "";
+			if (!text) return;
+
+			try {
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					await navigator.clipboard.writeText(text);
+				} else {
+					const ta = document.createElement("textarea");
+					ta.value = text;
+					document.body.appendChild(ta);
+					ta.select();
+					document.execCommand("copy");
+					document.body.removeChild(ta);
+				}
+
+				setCopied(true);
+				if (copyTimeoutRef.current)
+					clearTimeout(copyTimeoutRef.current);
+				copyTimeoutRef.current = setTimeout(() => {
+					setCopied(false);
+					copyTimeoutRef.current = null;
+				}, 1000);
+			} catch (e) {
+				// ignore copy errors
+			}
+		};
+
+		useEffect(() => {
+			return () => {
+				if (copyTimeoutRef.current)
+					clearTimeout(copyTimeoutRef.current);
+			};
+		}, []);
+
+		return (
+			<div
+				className={`flex gap-4 ${
+					message.role === "user" ? "justify-end" : "justify-start"
+				}`}
+			>
+				{/* {message.role === "assistant" && (
 				<div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
 					<Bot className="w-5 h-5 text-white" />
 				</div>
 			)} */}
-			<div
-				className={`relative px-6 py-4 rounded-2xl ${
-					message.role === "user"
-						? "bg-slate-900 text-white"
-						: " text-slate-900"
-				}`}
-			>
-				{/* Image (if provided) */}
-				{message.image_url && (
-					<div className="mb-4 max-w-2xs">
-						<a
-							href={message.image_url}
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							<img
-								src={message.image_url}
-								alt="attachment"
-								className="rounded-md border-2 max-w-full h-auto object-contain"
-							/>
-						</a>
-					</div>
-				)}
-				<div className="max-w-[calc(100vw-50px)] overflow-x-auto overflow-y-hidden">
-					<ReactMarkdown
-						remarkPlugins={[remarkGfm, remarkMath]}
-						rehypePlugins={[rehypeKatex]}
-						components={{
-							table: ({ node, ...props }) => (
-								<div className="overflow-x-auto mb-4">
-									<table
-										className="table-auto w-full mb-4 max-w-[calc(100vw-50px)] overflow-x-auto"
+				<div
+					className={`relative px-6 py-4 rounded-2xl ${
+						message.role === "user"
+							? "bg-slate-900 text-white"
+							: " text-slate-900"
+					}`}
+				>
+					{/* Image (if provided) */}
+					{message.image_url && (
+						<div className="mb-4 max-w-2xs">
+							<a
+								href={message.image_url}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<img
+									src={message.image_url}
+									alt="attachment"
+									className="rounded-md border-2 max-w-full h-auto object-contain"
+								/>
+							</a>
+						</div>
+					)}
+					<div className="max-w-[calc(100vw-50px)] overflow-x-auto overflow-y-hidden">
+						<ReactMarkdown
+							remarkPlugins={[remarkGfm, remarkMath]}
+							rehypePlugins={[rehypeKatex]}
+							components={{
+								table: ({ node, ...props }) => (
+									<div className="overflow-x-auto mb-4">
+										<table
+											className="table-auto w-full mb-4 max-w-[calc(100vw-50px)] overflow-x-auto"
+											{...props}
+										/>
+									</div>
+								),
+								p: ({ node, ...props }) => (
+									<p
+										className="custom-paragraph"
 										{...props}
 									/>
-								</div>
-							),
-							p: ({ node, ...props }) => (
-								<p className="custom-paragraph" {...props} />
-							),
-							thead: ({ node, ...props }) => (
-								<thead className="text-left" {...props} />
-							),
-							hr: ({ node, ...props }) => (
-								<hr className="my-10" {...props} />
-							),
-							pre: ({ node, children, ...props }) => (
-								<CodeBlock {...props}>{children}</CodeBlock>
-							),
-							code: ({ node, ...props }) => (
-								<code
-									className="bg-slate-100 p-1 rounded"
-									{...props}
-								/>
-							),
-							h3: ({ node, ...props }) => (
-								<h3 className="text-xl mb-4 mt-6" {...props} />
-							),
-							h2: ({ node, ...props }) => (
-								<h2 className="text-2xl mb-4 mt-6" {...props} />
-							),
-							td: ({ node, ...props }) => (
-								<td className="p-2" {...props} />
-							),
-							ol: ({ node, ...props }) => (
-								<ol
-									className="ml-5 mb-4 list-decimal"
-									{...props}
-								/>
-							),
-							ul: ({ node, ...props }) => (
-								<ul
-									className="ml-5 mb-4 list-disc"
-									{...props}
-								/>
-							),
-							li: ({ node, ...props }) => (
-								<li className="ml-5" {...props} />
-							),
-							input: ({ node, ...props }) => {
-								if (props.type === "checkbox") {
-									return (
-										<input
-											className="mr-2"
-											type="checkbox"
-											checked={props.checked}
-											readOnly
-										/>
-									);
-								}
-								return <input {...props} />;
-							},
-						}}
-					>
-						{preprocessLaTeX(displayedText)}
-					</ReactMarkdown>
-				</div>
-
-				{/* show copy icon */}
-				<div className="mt-2">
-					{message.role != "user" && !isTyping && (
-						<button
-							onClick={handleCopyMessage}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									e.preventDefault();
-									handleCopyMessage();
-								}
+								),
+								thead: ({ node, ...props }) => (
+									<thead className="text-left" {...props} />
+								),
+								hr: ({ node, ...props }) => (
+									<hr className="my-10" {...props} />
+								),
+								pre: ({ node, children, ...props }) => (
+									<CodeBlock {...props}>{children}</CodeBlock>
+								),
+								code: ({ node, ...props }) => (
+									<code
+										className="bg-slate-100 p-1 rounded"
+										{...props}
+									/>
+								),
+								h3: ({ node, ...props }) => (
+									<h3
+										className="text-xl mb-4 mt-6"
+										{...props}
+									/>
+								),
+								h2: ({ node, ...props }) => (
+									<h2
+										className="text-2xl mb-4 mt-6"
+										{...props}
+									/>
+								),
+								td: ({ node, ...props }) => (
+									<td className="p-2" {...props} />
+								),
+								ol: ({ node, ...props }) => (
+									<ol
+										className="ml-5 mb-4 list-decimal"
+										{...props}
+									/>
+								),
+								ul: ({ node, ...props }) => (
+									<ul
+										className="ml-5 mb-4 list-disc"
+										{...props}
+									/>
+								),
+								li: ({ node, ...props }) => (
+									<li className="ml-5" {...props} />
+								),
+								input: ({ node, ...props }) => {
+									if (props.type === "checkbox") {
+										return (
+											<input
+												className="mr-2"
+												type="checkbox"
+												checked={props.checked}
+												readOnly
+											/>
+										);
+									}
+									return <input {...props} />;
+								},
 							}}
-							title={copied ? "Copied" : "Copy message"}
-							aria-label={copied ? "Copied" : "Copy message"}
-							className="inline-flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-slate-100 transition"
 						>
-							{copied ? (
-								<>
-									<Check className="w-4 h-4 text-slate-700" />
-									<span className="sr-only">Copied</span>
-								</>
-							) : (
-								<>
-									<Copy className="w-4 h-4 text-slate-700" />
+							{preprocessLaTeX(displayedText)}
+						</ReactMarkdown>
+					</div>
+
+					{/* show copy icon */}
+					<div className="mt-2 flex gap-2 items-center">
+						{message.role != "user" && !isTyping && (
+							<>
+								<button
+									onClick={handleCopyMessage}
+									onKeyDown={(e) => {
+										if (
+											e.key === "Enter" ||
+											e.key === " "
+										) {
+											e.preventDefault();
+											handleCopyMessage();
+										}
+									}}
+									title={copied ? "Copied" : "Copy message"}
+									aria-label={
+										copied ? "Copied" : "Copy message"
+									}
+									className="inline-flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-slate-100 transition"
+								>
+									{copied ? (
+										<>
+											<Check className="w-4 h-4 text-slate-700" />
+											<span className="sr-only">
+												Copied
+											</span>
+										</>
+									) : (
+										<>
+											<Copy className="w-4 h-4 text-slate-700" />
+											<span className="sr-only">
+												Copy message
+											</span>
+										</>
+									)}
+								</button>
+
+								{/* Open dialog to save message as project custom context */}
+								<button
+									className="inline-flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-slate-100 transition"
+									onClick={() => {
+										// emit custom event handled by parent via props (handled below by rendering dialog in MessageList)
+										const ev = new CustomEvent(
+											"open-save-context",
+											{
+												detail: { message },
+												bubbles: true,
+												cancelable: true,
+											}
+										);
+										window.dispatchEvent(ev);
+									}}
+									type="button"
+								>
+									<BookOpen className="w-4 h-4 text-slate-700" />
 									<span className="sr-only">
-										Copy message
+										Save to project context
 									</span>
-								</>
-							)}
+								</button>
+							</>
+						)}
+					</div>
+
+					{/* Skip button */}
+					{isTyping && (
+						<button
+							onClick={handleSkip}
+							className="absolute top-2 right-2 p-1 rounded-full bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+							title="Skip typing"
+						>
+							<FastForward className="w-4 h-4 text-slate-600" />
 						</button>
 					)}
 				</div>
-
-				{/* Skip button */}
-				{isTyping && (
-					<button
-						onClick={handleSkip}
-						className="absolute top-2 right-2 p-1 rounded-full bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
-						title="Skip typing"
-					>
-						<FastForward className="w-4 h-4 text-slate-600" />
-					</button>
-				)}
 			</div>
-		</div>
-	);
-});
+		);
+	}
+);
 
-const MessageList = React.memo(({ messages, loading, endRef }) => {
-	const prevMessageCount = useRef(messages.length);
+const MessageList = React.memo(
+	({ messages, loading, endRef, project, selectedChat }) => {
+		const prevMessageCount = useRef(messages.length);
 
-	// Detect if a new assistant message was added
-	const shouldAnimateLast =
-		messages.length > prevMessageCount.current &&
-		messages[messages.length - 1].role === "assistant";
+		// dialog state for saving context
+		const [dialogOpen, setDialogOpen] = useState(false);
+		const [dialogTitle, setDialogTitle] = useState("");
+		const [dialogContent, setDialogContent] = useState("");
+		const [saving, setSaving] = useState(false);
+		const [saveError, setSaveError] = useState(null);
 
-	useEffect(() => {
-		prevMessageCount.current = messages.length;
-	}, [messages.length]);
+		useEffect(() => {
+			const listener = (e) => {
+				const msg = e.detail?.message;
+				if (!msg) return;
+				setDialogTitle(`context from ${selectedChat?.name ?? "chat"}`);
+				setDialogContent(msg.content ?? "");
+				setDialogOpen(true);
+			};
 
-	return (
-		<div className="max-w-5xl mx-auto space-y-6">
-			{messages.map((m, i) => (
-				<Message
-					key={m.id}
-					message={m}
-					isLast={i === messages.length - 1}
-					shouldAnimate={
-						shouldAnimateLast && i === messages.length - 1
+			window.addEventListener("open-save-context", listener);
+			return () =>
+				window.removeEventListener("open-save-context", listener);
+		}, [selectedChat]);
+
+		const handleSaveContext = async () => {
+			if (!project || !project.id) {
+				setSaveError("No project selected");
+				return;
+			}
+			setSaving(true);
+			setSaveError(null);
+			try {
+				// Normalize existing custom_context to array
+				let existing = [];
+				try {
+					if (project.custom_context) {
+						if (Array.isArray(project.custom_context))
+							existing = project.custom_context.slice();
+						else if (typeof project.custom_context === "object") {
+							existing = Object.entries(
+								project.custom_context
+							).map(([k, v]) => ({ key: k, value: v }));
+						}
 					}
-				/>
-			))}
-			{loading && (
-				<div className="flex gap-4 justify-start">
-					{/* <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
+				} catch (e) {
+					existing = [];
+				}
+
+				// append new pair
+				const payload = [
+					...existing,
+					{ key: dialogTitle, value: dialogContent },
+				];
+
+				const { data, error } = await supabase
+					.from("projects")
+					.update({ custom_context: payload })
+					.eq("id", project.id)
+					.select("*")
+					.single();
+
+				if (error) throw error;
+				// Optionally update local project representation—consumer should refresh if needed
+				setDialogOpen(false);
+			} catch (err) {
+				setSaveError(err.message || String(err));
+			} finally {
+				setSaving(false);
+			}
+		};
+
+		// Detect if a new assistant message was added
+		const shouldAnimateLast =
+			messages.length > prevMessageCount.current &&
+			messages[messages.length - 1].role === "assistant";
+
+		useEffect(() => {
+			prevMessageCount.current = messages.length;
+		}, [messages.length]);
+
+		return (
+			<div className="max-w-5xl mx-auto space-y-6">
+				{messages.map((m, i) => (
+					<Message
+						key={m.id}
+						message={m}
+						isLast={i === messages.length - 1}
+						shouldAnimate={
+							shouldAnimateLast && i === messages.length - 1
+						}
+						project={project}
+						chat={selectedChat}
+					/>
+				))}
+				{loading && (
+					<div className="flex gap-4 justify-start">
+						{/* <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
 						<Bot className="w-5 h-5 text-white" />
 					</div> */}
-					<div className="max-w-2xl px-6 py-4 rounded-2xl bg-white border border-slate-200">
-						<div className="flex gap-2">
-							<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
-							<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-100"></div>
-							<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-200"></div>
+						<div className="max-w-2xl px-6 py-4 rounded-2xl bg-white border border-slate-200">
+							<div className="flex gap-2">
+								<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
+								<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-100"></div>
+								<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-200"></div>
+							</div>
 						</div>
 					</div>
-				</div>
-			)}
-			<div ref={endRef} />
-		</div>
-	);
-});
+				)}
+				<div ref={endRef} />
+
+				{/* Dialog for saving message as project custom context */}
+				<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>{dialogTitle}</DialogTitle>
+							<DialogDescription>
+								Save the selected message into this project's
+								custom context. The content is editable in
+								Markdown.
+							</DialogDescription>
+						</DialogHeader>
+
+						<div className="space-y-4">
+							<label className="block text-sm font-medium">
+								Title
+							</label>
+							<Input
+								value={dialogTitle}
+								onChange={(e) => setDialogTitle(e.target.value)}
+							/>
+
+							<label className="block text-sm font-medium">
+								Content (Markdown)
+							</label>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<textarea
+									className="w-full p-3 border rounded-md min-h-[180px]"
+									value={dialogContent}
+									onChange={(e) =>
+										setDialogContent(e.target.value)
+									}
+								/>
+								<div className="prose max-w-none overflow-auto p-3 border rounded-md bg-white max-h-[360px]">
+									<ReactMarkdown
+										remarkPlugins={[remarkGfm, remarkMath]}
+										rehypePlugins={[rehypeKatex]}
+									>
+										{preprocessLaTeX(dialogContent)}
+									</ReactMarkdown>
+								</div>
+							</div>
+						</div>
+
+						<DialogFooter>
+							<Button
+								variant="ghost"
+								onClick={() => setDialogOpen(false)}
+							>
+								Cancel
+							</Button>
+							<Button
+								onClick={handleSaveContext}
+								disabled={saving}
+							>
+								{saving ? "Saving..." : "Save to context"}
+							</Button>
+						</DialogFooter>
+						{saveError && (
+							<div className="text-sm text-red-600 mt-2">
+								{saveError}
+							</div>
+						)}
+					</DialogContent>
+				</Dialog>
+			</div>
+		);
+	}
+);
 
 export default MessageList;

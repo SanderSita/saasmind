@@ -494,6 +494,8 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 						messages={messages}
 						loading={loading}
 						endRef={messagesEndRef}
+						project={project}
+						selectedChat={selectedChat}
 					/>
 				)}
 			</div>
