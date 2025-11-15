@@ -86,7 +86,7 @@ export function AppSidebar({
 								disabled={!selectedProject}
 								aria-disabled={!selectedProject}
 							>
-								<BookOpen className="w-4 h-4" />
+								<BookOpen size={16} className=" my-auto" />
 								<span className="font-medium">
 									Project Context
 								</span>

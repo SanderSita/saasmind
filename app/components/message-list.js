@@ -253,7 +253,10 @@ const Message = React.memo(
 									/>
 								),
 								thead: ({ node, ...props }) => (
-									<thead className="text-left" {...props} />
+									<thead
+										className="text-left border-b py-2"
+										{...props}
+									/>
 								),
 								hr: ({ node, ...props }) => (
 									<hr className="my-10" {...props} />
@@ -280,7 +283,7 @@ const Message = React.memo(
 									/>
 								),
 								td: ({ node, ...props }) => (
-									<td className="p-2" {...props} />
+									<td className="py-2" {...props} />
 								),
 								ol: ({ node, ...props }) => (
 									<ol
@@ -401,6 +404,12 @@ const MessageList = React.memo(
 	({ messages, loading, endRef, project, selectedChat }) => {
 		const prevMessageCount = useRef(messages.length);
 
+		// keep a ref to latest messages so window event handlers see updates
+		const messagesRef = useRef(messages);
+		useEffect(() => {
+			messagesRef.current = messages;
+		}, [messages]);
+
 		// dialog state for saving context
 		const [dialogOpen, setDialogOpen] = useState(false);
 		const [dialogTitle, setDialogTitle] = useState("");
@@ -411,6 +420,10 @@ const MessageList = React.memo(
 		// selection UI state
 		const [selectionText, setSelectionText] = useState("");
 		const [selectionRect, setSelectionRect] = useState(null);
+
+		// computed, clamped position for the floating button (page coordinates)
+		const [selectionPos, setSelectionPos] = useState(null);
+		const addBtnRef = useRef(null);
 
 		useEffect(() => {
 			const handleMouseUp = (e) => {
@@ -428,13 +441,53 @@ const MessageList = React.memo(
 					return;
 				}
 
-				// ensure selection is inside a message element
-				let node = sel.anchorNode;
-				if (!node) return;
-				if (node.nodeType === 3) node = node.parentElement;
-				let msgEl = node;
+				// find the deepest common ancestor of the selection range
+				let range;
+				try {
+					range = sel.getRangeAt(0);
+				} catch (err) {
+					setSelectionText("");
+					setSelectionRect(null);
+					return;
+				}
+
+				let container = range.commonAncestorContainer;
+				if (!container) {
+					setSelectionText("");
+					setSelectionRect(null);
+					return;
+				}
+				if (container.nodeType === 3)
+					container = container.parentElement;
+
+				// ensure selection is inside a message element by climbing DOM
+				let msgEl = container;
 				while (msgEl && !msgEl.dataset?.messageId)
 					msgEl = msgEl.parentElement;
+
+				// If commonAncestorContainer didn't locate a message wrapper,
+				// try several fallback nodes: anchorNode, focusNode, range start/end.
+				if (!msgEl) {
+					const tryNodes = [
+						sel.anchorNode,
+						sel.focusNode,
+						range.startContainer,
+						range.endContainer,
+					];
+					for (const n of tryNodes) {
+						let node = n;
+						if (!node) continue;
+						if (node.nodeType === 3) node = node.parentElement;
+						let candidate = node;
+						while (candidate && !candidate.dataset?.messageId)
+							candidate = candidate.parentElement;
+						if (candidate) {
+							msgEl = candidate;
+							break;
+						}
+					}
+				}
+
 				if (!msgEl) {
 					setSelectionText("");
 					setSelectionRect(null);
@@ -442,7 +495,7 @@ const MessageList = React.memo(
 				}
 
 				const messageId = msgEl.dataset.messageId;
-				const found = (messages || []).find(
+				const found = (messagesRef.current || []).find(
 					(m) => String(m.id) === String(messageId)
 				);
 				if (!found || found.role === "user") {
@@ -452,11 +505,92 @@ const MessageList = React.memo(
 					return;
 				}
 
-				// find bounding rect for selection
-				const range = sel.getRangeAt(0);
-				const rect = range.getBoundingClientRect();
+				// compute a usable bounding rect for the selection.
+				// For code blocks / multi-line selections, getClientRects() can
+				// return multiple rects (one per line). We'll pick the first
+				// visible rect or fall back to the union of rects, then to
+				// range.getBoundingClientRect(). This gives more reliable
+				// positioning for the floating button.
+				let rect = null;
+				try {
+					const clientRects = range.getClientRects();
+					if (clientRects && clientRects.length > 0) {
+						// find first rect with area > 0
+						for (let i = 0; i < clientRects.length; i++) {
+							const r = clientRects[i];
+							if (r.width > 0 && r.height > 0) {
+								rect = r;
+								break;
+							}
+						}
+
+						// if no single rect found (all zero), compute union
+						if (!rect && clientRects.length > 0) {
+							let left = Infinity,
+								top = Infinity,
+								right = -Infinity,
+								bottom = -Infinity;
+							for (let i = 0; i < clientRects.length; i++) {
+								const r = clientRects[i];
+								if (r.width === 0 && r.height === 0) continue;
+								left = Math.min(left, r.left);
+								top = Math.min(top, r.top);
+								right = Math.max(right, r.right);
+								bottom = Math.max(bottom, r.bottom);
+							}
+							if (left !== Infinity) {
+								rect = {
+									left,
+									top,
+									right,
+									bottom,
+									width: right - left,
+									height: bottom - top,
+								};
+							}
+						}
+					}
+				} catch (err) {
+					rect = null;
+				}
+
+				if (!rect) {
+					try {
+						rect = range.getBoundingClientRect();
+					} catch (err) {
+						rect = null;
+					}
+				}
+
+				// Prefer to position at the mouse cursor where the user
+				// released the selection (gives more intuitive placement).
+				// The mouse event is available as `e` in this handler.
+				let finalRect = rect;
+				try {
+					if (
+						typeof e?.clientX === "number" &&
+						typeof e?.clientY === "number"
+					) {
+						finalRect = {
+							left: e.clientX,
+							top: e.clientY,
+							width: 0,
+							height: 0,
+						};
+					}
+				} catch (err) {
+					// ignore and use rect
+				}
+
+				if (!finalRect) {
+					// As a last resort, clear selection UI
+					setSelectionText("");
+					setSelectionRect(null);
+					return;
+				}
+
 				setSelectionText(text);
-				setSelectionRect(rect);
+				setSelectionRect(finalRect);
 			};
 
 			const handleKey = (e) => {
@@ -474,6 +608,57 @@ const MessageList = React.memo(
 				window.removeEventListener("keyup", handleKey);
 			};
 		}, []);
+
+		// compute clamped button position whenever selectionRect changes
+		useEffect(() => {
+			if (!selectionRect) {
+				setSelectionPos(null);
+				return;
+			}
+
+			function computePos() {
+				const btn = addBtnRef.current;
+				const btnW = (btn && btn.offsetWidth) || 120;
+				const btnH = (btn && btn.offsetHeight) || 36;
+
+				// selectionRect values (from range.getClientRects() or
+				// range.getBoundingClientRect() or mouse event clientX/Y)
+				// are in viewport (client) coordinates. We must compute the
+				// position in viewport coords because the button is
+				// positioned `fixed` (which is relative to the viewport).
+				const rectLeft =
+					Number(selectionRect.left ?? selectionRect.x ?? 0) || 0;
+				const rectTop =
+					Number(selectionRect.top ?? selectionRect.y ?? 0) || 0;
+
+				// Prefer showing the button slightly above the selection / cursor
+				let left = rectLeft;
+				let top = rectTop - 40; // offset above cursor/rect
+
+				// Clamp into the viewport (no scroll offsets because fixed pos)
+				const margin = 8;
+				const maxLeft = window.innerWidth - btnW - margin;
+				const maxTop = window.innerHeight - btnH - margin;
+				left = Math.min(Math.max(left, margin), maxLeft);
+				top = Math.min(Math.max(top, margin), maxTop);
+
+				// Ensure finite numbers
+				if (!Number.isFinite(left) || !Number.isFinite(top)) {
+					setSelectionPos(null);
+					return;
+				}
+
+				setSelectionPos({ left, top });
+			}
+
+			computePos();
+			window.addEventListener("resize", computePos);
+			window.addEventListener("scroll", computePos, { passive: true });
+			return () => {
+				window.removeEventListener("resize", computePos);
+				window.removeEventListener("scroll", computePos);
+			};
+		}, [selectionRect]);
 
 		useEffect(() => {
 			const listener = (e) => {
@@ -576,12 +761,13 @@ const MessageList = React.memo(
 				<div ref={endRef} />
 
 				{/* Floating 'Add to context' button shown when user selects text */}
-				{selectionText && selectionRect && (
+				{selectionText && selectionPos && (
 					<button
+						ref={addBtnRef}
 						className="fixed z-50 bg-slate-900 text-white px-2 py-1 rounded text-sm shadow-lg"
 						style={{
-							top: selectionRect.top + window.scrollY - 40,
-							left: selectionRect.left + window.scrollX,
+							top: selectionPos.top,
+							left: selectionPos.left,
 						}}
 						onClick={() => {
 							setDialogTitle(
@@ -592,6 +778,7 @@ const MessageList = React.memo(
 							// clear selection UI
 							setSelectionText("");
 							setSelectionRect(null);
+							setSelectionPos(null);
 						}}
 					>
 						Add to context
