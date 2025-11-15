@@ -114,7 +114,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onCreate }) {
 							onChange={(e) => setDescription(e.target.value)}
 							className="w-full rounded-md border px-3 py-2 bg-white text-slate-900 resize-none"
 							rows={3}
-							placeholder="Description of the project. be as detailed as you'd like."
+							placeholder="Description of the project. Be as detailed as you'd like."
 						/>
 					</div>
 

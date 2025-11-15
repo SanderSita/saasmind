@@ -153,7 +153,7 @@ export function NavChats({
 				))}
 				<SidebarMenuItem>
 					<SidebarMenuButton
-						className="text-sidebar-foreground/70"
+						className="text-sidebar-foreground/70 cursor-pointer"
 						onClick={() => onCreate && onCreate()}
 					>
 						<Plus className="text-sidebar-foreground/70" />
