@@ -31,6 +31,10 @@ import {
 	SidebarFooter,
 	SidebarHeader,
 	SidebarRail,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarMenu,
+	SidebarMenuItem,
 	SidebarMenuButton,
 	useSidebar,
 } from "@/components/ui/sidebar";
@@ -176,34 +180,27 @@ export function AppSidebar({
 				)}
 			</SidebarHeader>
 			<SidebarContent>
-				{/* Top: Project Context quick action (replaces chat area) */}
 				{hasProjects && (
-					<>
-						<div className="px-3 py-2">
-							<button
-								onClick={() =>
-									onOpenProjectContext &&
-									onOpenProjectContext()
-								}
-								className={`group w-full text-left flex items-center gap-3 px-3 py-2 rounded-md hover:bg-surface-glass transition-colors ${
-									selectedProject
-										? "cursor-pointer"
-										: "opacity-50 pointer-events-none"
-								}`}
-								disabled={!selectedProject}
-								aria-disabled={!selectedProject}
-							>
-								<BookOpen size={16} className=" my-auto" />
-								<span className="font-medium">
-									Project Context
-								</span>
-							</button>
-						</div>
-
-						<hr className="border-surface-glass" />
-					</>
+					<SidebarGroup className="group-data-[collapsible=icon]:hidden">
+						<SidebarGroupContent className="flex flex-col gap-2">
+							<SidebarMenuItem className="flex items-center gap-2">
+								<SidebarMenuButton
+									tooltip="Project Context"
+									className={"justify-baseline font-normal"}
+									onClick={() =>
+										onOpenProjectContext &&
+										onOpenProjectContext()
+									}
+									disabled={!selectedProject}
+									aria-disabled={!selectedProject}
+								>
+									<BookOpen size={16} className="my-auto" />
+									<span>Project Context</span>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						</SidebarGroupContent>
+					</SidebarGroup>
 				)}
-
 				{!hasProjects ? (
 					<div className="px-4 py-6 flex flex-col items-center gap-3 text-center">
 						<Bot className="w-8 h-8 text-muted-foreground" />
@@ -217,6 +214,7 @@ export function AppSidebar({
 						<Button
 							size="default"
 							className="mt-2"
+							variant="default"
 							onClick={() => onCreateProject && onCreateProject()}
 						>
 							Create your first project
@@ -239,16 +237,18 @@ export function AppSidebar({
 			</SidebarContent>
 			<SidebarFooter>
 				{selectedProject && (
-					<div className="px-2 py-1">
+					<div className="">
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<SidebarMenuButton asChild>
-									<button className="w-full cursor-pointer text-left flex items-center gap-2 px-2 py-1 rounded-md hover:bg-surface-glass transition-colors">
+									<Button
+										variant="ghost"
+										size="sm"
+										className="justify-baseline font-normal"
+									>
 										<Settings2 className="size-4" />
-										<span className="font-medium">
-											Project Settings
-										</span>
-									</button>
+										<span>Project Settings</span>
+									</Button>
 								</SidebarMenuButton>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
