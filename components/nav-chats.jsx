@@ -131,7 +131,7 @@ export function NavChats({
 								</SidebarMenuAction>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
-								className="w-48 rounded-lg"
+								className="w-48"
 								side={isMobile ? "bottom" : "right"}
 								align={isMobile ? "end" : "start"}
 							>
@@ -226,7 +226,7 @@ export function NavChats({
 							autoFocus
 							value={renameName}
 							onChange={(e) => setRenameName(e.target.value)}
-							className="w-full rounded-md border px-3 py-2 bg-white text-slate-900"
+							className="w-full border px-3 py-2 bg-white text-slate-900"
 							placeholder="Chat name"
 						/>
 					</div>

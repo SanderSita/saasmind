@@ -27,7 +27,7 @@ export default function LoginBtn({ btn, isSignin }) {
 					{/* Google sign-in (shadcn Button) */}
 					<button
 						type="button"
-						className="inline-flex cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+						className="inline-flex cursor-pointer items-center justify-center border px-3 py-2 text-sm font-medium hover:bg-muted"
 						onClick={() => {
 							// replace with your real OAuth endpoint
 							window.location.href = "/api/auth/google";
@@ -107,7 +107,7 @@ export default function LoginBtn({ btn, isSignin }) {
 								name="email"
 								type="email"
 								required
-								className="w-full rounded-md border px-3 py-2 text-sm"
+								className="w-full border px-3 py-2 text-sm"
 							/>
 						</div>
 
@@ -123,14 +123,14 @@ export default function LoginBtn({ btn, isSignin }) {
 								name="password"
 								type="password"
 								required
-								className="w-full rounded-md border px-3 py-2 text-sm"
+								className="w-full border px-3 py-2 text-sm"
 							/>
 						</div>
 
 						<div>
 							<button
 								type="submit"
-								className="w-full cursor-pointer rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-95"
+								className="w-full cursor-pointer bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-95"
 							>
 								{isSignin ? "Sign in" : "Create Account"}
 							</button>

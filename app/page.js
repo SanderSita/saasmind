@@ -1,313 +1,280 @@
-import {
-	Sparkles,
-	Zap,
-	Target,
-	TrendingUp,
-	MessageSquare,
-	Rocket,
-} from "lucide-react";
+import { Atom } from "lucide-react";
 import LoginBtn from "./components/login-btn";
-import Header from "./components/header";
 
 export default async function LandingPage() {
 	return (
-		<div className="min-h-screen bg-linear-to-b from-white to-slate-200">
-			<Header />
-			{/* <nav className="fixed top-0 left-0 right-0 px-4 bz-50 text-black/80">
-				<div className="mt-4 max-w-[350px] h-[40px] backdrop-blur-[20px] rounded-lg flex justify-between items-center overflow-hidden mx-auto animate-fade-in duration-300">
-					<div className="bg-surface-glass bg-[#D8DBE2]/50 backdrop-blur-md flex h-full w-full justify-between items-center pl-5 pr-1">
-						<div className="flex items-center pt-[1.5px] text-content-primary">
-							<img
-								src="/logo.svg"
-								className="w-6 h-6 mr-2"
-								alt="logo"
-							/>
-							<a
-								className="transition-opacity duration-200 ease-out hover:opacity-60"
-								href="/"
-							>
-								SaaSMind
-							</a>
-						</div>
-						<div className="flex items-center">
-							<div className="flex items-center gap-4 mr-4">
-								<a
-									className="text-content-tertiary text-xs font-regularplus tracking-wide leading-[1.45] hover:text-content-primary transition-colors duration-default ease-out"
-									href="/waitlist"
-								>
-									Login
-								</a>
-							</div>
-						</div>
+		<div className="bg-[#EEEEEE] p-8 min-h-screen">
+			{/* header */}
+			<div className="w-full p-3 border border-black flex justify-between items-center text-xl">
+				<div className="flex gap-2 ml-2 items-center">
+					<Atom className="size-10" />
+					<div className="flex gap-12 ml-8">
+						<span>Cloud Sessions</span>
+						<span>Agents API</span>
+						<span>Playground</span>
+						<span>Docs</span>
 					</div>
 				</div>
-			</nav> */}
 
-			<main className="pt-24">
-				<section className="max-w-7xl mx-auto px-6 py-20 md:py-32">
-					<div className="text-center max-w-4xl mx-auto">
-						<div className="inline-flex items-center gap-2 bg-slate-900/5 px-4 py-2 rounded-full mb-8 border border-slate-200">
-							<img
-								src="/logo.svg"
-								className="w-6 h-6"
-								alt="logo"
-							/>
-							<span className="text-sm font-medium text-slate-700">
-								Your AI Product Manager
-							</span>
+				<LoginBtn
+					btn={
+						<div className="bg-slate-900 cursor-pointer text-white px-8 py-4">
+							Get Started
 						</div>
+					}
+					isSignin={false}
+				/>
+			</div>
 
-						<h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-							Build Your SaaS
-							<span className="block text-transparent bg-clip-text bg-gradient-to-r from-slate-700 to-slate-900">
-								Faster & Smarter
-							</span>
-						</h1>
+			<div className="w-full h-10 show-lines"></div>
 
-						<p className="text-xl md:text-2xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto">
-							Your personal AI assistant that remembers your
-							entire SaaS context. Get instant help with building,
-							marketing, content creation, and strategic
-							decisions.
-						</p>
+			{/* main */}
+			<div className="border border-black w-full flex flex-col justify-center text-center">
+				<div className="flex items-center gap-2 mt-28 text-[10px] justify-center">
+					<div className="bg-black size-2.5 rounded-full shrink-0"></div>
+					<span className="tracking-tight leading-none mt-[2px]">
+						NEW ANNOUNCEMENT ON X –{" "}
+						<span className="text-blue-500">READ MORE</span>
+					</span>
+				</div>
 
-						<div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-							<LoginBtn
-								btn={
-									<div className="bg-slate-900 cursor-pointer text-white px-8 py-4 rounded-xl hover:bg-slate-800 transition-all font-semibold text-lg shadow-xl shadow-slate-900/20 hover:shadow-2xl hover:scale-105 flex items-center gap-2">
-										Start Building
-										<Rocket className="w-5 h-5" />
-									</div>
-								}
-								isSignin={false}
-							/>
+				<h1 className="text-8xl tracking-tighter mt-10">
+					The browser engine for<br></br>autonomous AI
+				</h1>
+				<p className="text-lg text-gray-500 tracking-tight font-extralight mt-8">
+					Brixel runs, controls, and scales browsers in the cloud -
+					built for developers<br></br>creating agents, scrapers and
+					automation at massive scale.
+				</p>
 
-							<button className="bg-white cursor-pointer text-slate-900 px-8 py-4 rounded-xl hover:bg-slate-50 transition-all font-semibold text-lg border-2 border-slate-200 hover:border-slate-300">
-								Watch Demo
-							</button>
-						</div>
-
-						<div className="flex flex-wrap items-center justify-center gap-8 text-sm text-slate-500">
-							<div className="flex items-center gap-2">
-								<div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-								<span>Free (for now)</span>
+				<div className="flex gap-3 justify-center mt-8 game-font text-xl">
+					<LoginBtn
+						btn={
+							<div className="bg-slate-900 cursor-pointer text-white px-8 py-4">
+								Launch Playground
 							</div>
-						</div>
+						}
+						isSignin={false}
+					/>
+					<div className="relative inline-flex px-10 py-3 game-font cursor-pointer">
+						<span className="my-auto">Read Docs</span>
+
+						{/* Top-left corner */}
+						<span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-black z-20"></span>
+
+						{/* Top-right corner */}
+						<span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-black z-20"></span>
+
+						{/* Bottom-left corner */}
+						<span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-black z-20"></span>
+
+						{/* Bottom-right corner */}
+						<span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-black z-20"></span>
+
+						<span className="absolute w-full bottom-0 left-0 border h-full border-gray-300"></span>
 					</div>
-				</section>
+				</div>
 
-				<section
-					id="features"
-					className="max-w-7xl cursor-default mx-auto px-6 py-20 bg-white rounded-3xl shadow-2xl shadow-slate-900/10 mx-6 mb-20"
-				>
-					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-						<div className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
-							<div className="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center mb-6">
-								<MessageSquare className="w-7 h-7 text-white" />
-							</div>
-							<h3 className="text-2xl font-bold text-slate-900 mb-4">
-								Context-Aware Chat
-							</h3>
-							<p className="text-slate-600 leading-relaxed">
-								Your AI remembers everything about your SaaS. No
-								need to repeat yourself. Every conversation
-								builds on previous context.
-							</p>
-						</div>
+				<img src="/images/hero-1.png" className="mt-26" />
+			</div>
 
-						<div className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
-							<div className="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center mb-6">
-								<Zap className="w-7 h-7 text-white" />
-							</div>
-							<h3 className="text-2xl font-bold text-slate-900 mb-4">
-								Instant Solutions
-							</h3>
-							<p className="text-slate-600 leading-relaxed">
-								Get immediate answers for technical challenges,
-								feature ideas, and implementation strategies
-								tailored to your product.
-							</p>
-						</div>
+			<div className="w-full h-10 show-lines"></div>
 
-						<div className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
-							<div className="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center mb-6">
-								<Target className="w-7 h-7 text-white" />
-							</div>
-							<h3 className="text-2xl font-bold text-slate-900 mb-4">
-								Marketing Strategy
-							</h3>
-							<p className="text-slate-600 leading-relaxed">
-								Generate targeted marketing campaigns, social
-								media posts, and content strategies that align
-								with your SaaS vision.
-							</p>
-						</div>
+			<div className="grid grid-cols-3 w-full border border-black">
+				<div className="border-r border-r-black p-7">
+					<p className="text-4xl">{"<1s"}</p>
+					<p className="text-xl text-gray-400 mt-4">
+						From Request to Render
+					</p>
+				</div>
+				<div className="border-r border-r-black p-7">
+					<p className="text-4xl">{"300,000+"}</p>
+					<p className="text-xl text-gray-400 mt-4">
+						Cloud Sessions Deployed
+					</p>
+				</div>
+				<div className="p-7">
+					<p className="text-4xl">{"98B+"}</p>
+					<p className="text-xl text-gray-400 mt-4">
+						Browser Events Processed
+					</p>
+				</div>
+			</div>
 
-						<div className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
-							<div className="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center mb-6">
-								<TrendingUp className="w-7 h-7 text-white" />
-							</div>
-							<h3 className="text-2xl font-bold text-slate-900 mb-4">
-								Product Management
-							</h3>
-							<p className="text-slate-600 leading-relaxed">
-								Get guidance on prioritization, roadmapping, and
-								strategic decisions like having an experienced
-								PM on your team.
-							</p>
-						</div>
-
-						<div className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
-							<div className="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center mb-6">
-								<Sparkles className="w-7 h-7 text-white" />
-							</div>
-							<h3 className="text-2xl font-bold text-slate-900 mb-4">
-								Idea Generation
-							</h3>
-							<p className="text-slate-600 leading-relaxed">
-								Brainstorm features, explore market
-								opportunities, and validate ideas with AI that
-								understands your unique context.
-							</p>
-						</div>
-
-						<div className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
-							<div className="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center mb-6">
-								<Rocket className="w-7 h-7 text-white" />
-							</div>
-							<h3 className="text-2xl font-bold text-slate-900 mb-4">
-								Launch Support
-							</h3>
-							<p className="text-slate-600 leading-relaxed">
-								From MVP to scale, get continuous support for
-								launches, updates, and growth strategies that
-								drive results.
-							</p>
-						</div>
+			<div className="border-x border-b border-black w-full">
+				<div className="p-20 ">
+					<div className="flex items-center gap-2 text-[10px]">
+						<div className="bg-black size-2.5 rounded-full shrink-0"></div>
+						<span className="tracking-tight leading-none mt-[2px]">
+							USE CASES
+						</span>
 					</div>
-				</section>
+					<h2 className="text-8xl tracking-tighter mt-10">
+						What Developers<br></br>Power with Brixel
+					</h2>
+					<p className="text-xl text-gray-400 font-extralight mt-8 lea">
+						From smart clawlers to real-time web agents, Brixel runs
+						your automations<br></br>inside fully managed browsers
+						-- fast, scalable and built for the modern AI stack.
+					</p>
+				</div>
 
-				<section
-					id="how-it-works"
-					className="max-w-7xl mx-auto px-6 py-20"
-				>
-					<div className="text-center mb-16">
-						<h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-							How It Works
-						</h2>
-						<p className="text-xl text-slate-600 max-w-2xl mx-auto">
-							Three simple steps to your personal AI product
-							assistant
+				<img src="/images/hero-1.png" className="w-full" />
+			</div>
+
+			{/* HOW TO USE SECTION */}
+			<div className="p-20 border-x border-b border-black w-full bg-[#EEEEEE]">
+				<div className="flex items-center gap-2 text-[10px]">
+					<div className="bg-black size-2.5 rounded-full shrink-0"></div>
+					<span className="tracking-tight leading-none mt-[2px]">
+						HOW TO USE
+					</span>
+				</div>
+
+				<h2 className="text-8xl tracking-tighter mt-10">
+					Get Started<br></br>in Minutes
+				</h2>
+
+				<p className="text-xl text-gray-400 font-extralight mt-8">
+					Using Brixel is simple — deploy cloud browsers, send
+					commands, and<br></br>
+					start automating with powerful APIs built for AI-driven
+					workflows.
+				</p>
+
+				{/* Steps */}
+				<div className="grid grid-cols-3 border border-black mt-16">
+					{/* Step 1 */}
+					<div className="border-r border-black p-10">
+						<p className="text-3xl tracking-tight">01</p>
+						<p className="text-2xl mt-4">Create a Session</p>
+						<p className="text-gray-500 mt-4 text-lg font-extralight">
+							Launch a high-performance cloud browser by calling
+							the Sessions API or using the Playground UI.
 						</p>
 					</div>
 
-					<div className="grid md:grid-cols-3 gap-12">
-						<div className="text-center">
-							<div className="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 mx-auto shadow-lg">
-								1
-							</div>
-							<h3 className="text-2xl font-bold text-slate-900 mb-4">
-								Tell Us About Your SaaS
-							</h3>
-							<p className="text-slate-600 leading-relaxed">
-								Share your vision, target market, features, and
-								goals. The AI learns your entire context in
-								minutes.
-							</p>
-						</div>
-
-						<div className="text-center">
-							<div className="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 mx-auto shadow-lg">
-								2
-							</div>
-							<h3 className="text-2xl font-bold text-slate-900 mb-4">
-								Ask Anything
-							</h3>
-							<p className="text-slate-600 leading-relaxed">
-								Get help with coding, marketing, strategy, or
-								content. Your AI remembers every conversation
-								and builds on it.
-							</p>
-						</div>
-
-						<div className="text-center">
-							<div className="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 mx-auto shadow-lg">
-								3
-							</div>
-							<h3 className="text-2xl font-bold text-slate-900 mb-4">
-								Build & Launch Faster
-							</h3>
-							<p className="text-slate-600 leading-relaxed">
-								Execute with confidence knowing you have an AI
-								assistant that understands your product inside
-								and out.
-							</p>
-						</div>
-					</div>
-				</section>
-
-				<section className="max-w-5xl mx-auto px-6 py-20">
-					<div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-12 md:p-16 text-center shadow-2xl">
-						<h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-							Ready to Build Smarter?
-						</h2>
-						<p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-							Join other SaaS builders who are shipping faster
-							with their AI product assistant.
+					{/* Step 2 */}
+					<div className="border-r border-black p-10">
+						<p className="text-3xl tracking-tight">02</p>
+						<p className="text-2xl mt-4">Send Commands</p>
+						<p className="text-gray-500 mt-4 text-lg font-extralight">
+							Navigate, click, scrape, or evaluate pages using
+							simple, structured API requests — no setup required.
 						</p>
-
-						<LoginBtn
-							btn={
-								<div className="bg-white text-slate-900 px-10 py-5 rounded-xl cursor-pointer hover:bg-slate-100 transition-all font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 inline-flex items-center gap-2">
-									Start Building
-									<Rocket className="w-6 h-6" />
-								</div>
-							}
-							isSignin={false}
-						/>
 					</div>
-				</section>
-			</main>
 
-			<footer className="border-t border-slate-200 mt-20">
-				<div className="max-w-7xl mx-auto px-6 py-12">
-					<div className="flex flex-col md:flex-row items-center justify-between gap-6">
-						<div className="flex items-center gap-2">
-							<img
-								src="/logo.svg"
-								alt="SaaSMind Logo"
-								className="w-8 h-8"
-							/>
-							<span className="text-lg font-bold text-slate-900">
-								SaaSMind
-							</span>
-						</div>
-						<div className="flex items-center gap-8 text-slate-600">
-							<a
-								href="#"
-								className="hover:text-slate-900 transition-colors"
-							>
-								Privacy
-							</a>
-							<a
-								href="#"
-								className="hover:text-slate-900 transition-colors"
-							>
-								Terms
-							</a>
-							<a
-								href="#"
-								className="hover:text-slate-900 transition-colors"
-							>
-								Contact
-							</a>
-						</div>
-						<p className="text-slate-500 text-sm">
-							© 2025 SaaSMind. All rights reserved.
+					{/* Step 3 */}
+					<div className="p-10">
+						<p className="text-3xl tracking-tight">03</p>
+						<p className="text-2xl mt-4">Scale Automatically</p>
+						<p className="text-gray-500 mt-4 text-lg font-extralight">
+							Run hundreds or thousands of concurrent browser
+							sessions with Brixel’s fully managed infrastructure.
 						</p>
 					</div>
 				</div>
-			</footer>
+
+				{/* Optional CTA */}
+				<div className="flex gap-3 justify-start mt-14 game-font text-xl">
+					<div className="bg-slate-900 cursor-pointer text-white px-8 py-4">
+						Start a Session
+					</div>
+
+					<div className="relative inline-flex px-10 py-3 cursor-pointer">
+						<span className="my-auto">View API Docs</span>
+
+						{/* Corners */}
+						<span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-black z-20"></span>
+						<span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-black z-20"></span>
+						<span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-black z-20"></span>
+						<span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-black z-20"></span>
+
+						<span className="absolute w-full bottom-0 left-0 border h-full border-gray-300"></span>
+					</div>
+				</div>
+			</div>
+
+			{/* FOOTER */}
+			<div className="w-full h-10 show-lines"></div>
+			<div className="border border-black w-full bg-[#EEEEEE] p-20">
+				{/* small label */}
+				<div className="flex items-center gap-2 text-[10px]">
+					<div className="bg-black size-2.5 rounded-full shrink-0"></div>
+					<span className="tracking-tight leading-none mt-[2px]">
+						BRIXEL
+					</span>
+				</div>
+
+				{/* main footer grid */}
+				<div className="grid grid-cols-4 gap-10 mt-12 text-lg">
+					{/* Column 1 - Brand */}
+					<div className="flex flex-col gap-3">
+						<span className="text-3xl tracking-tight">Brixel</span>
+						<p className="text-gray-500 text-sm font-extralight mt-2">
+							The browser engine for autonomous AI — fast,
+							scalable, and built for developers.
+						</p>
+					</div>
+
+					{/* Column 2 */}
+					<div className="flex flex-col gap-1">
+						<p className="text-xl tracking-tight">Product</p>
+						<span className="text-gray-500 cursor-pointer mt-2">
+							Cloud Sessions
+						</span>
+						<span className="text-gray-500 cursor-pointer">
+							Agents API
+						</span>
+						<span className="text-gray-500 cursor-pointer">
+							Playground
+						</span>
+						<span className="text-gray-500 cursor-pointer">
+							Pricing
+						</span>
+					</div>
+
+					{/* Column 3 */}
+					<div className="flex flex-col gap-1">
+						<p className="text-xl tracking-tight">Resources</p>
+						<span className="text-gray-500 cursor-pointer mt-2">
+							Docs
+						</span>
+						<span className="text-gray-500 cursor-pointer">
+							API Reference
+						</span>
+						<span className="text-gray-500 cursor-pointer">
+							Status
+						</span>
+						<span className="text-gray-500 cursor-pointer">
+							Examples
+						</span>
+					</div>
+
+					{/* Column 4 */}
+					<div className="flex flex-col gap-1">
+						<p className="text-xl tracking-tight">Company</p>
+						<span className="text-gray-500 cursor-pointer mt-2">
+							About
+						</span>
+						<span className="text-gray-500 cursor-pointer">
+							Blog
+						</span>
+						<span className="text-gray-500 cursor-pointer">
+							X (Twitter)
+						</span>
+						<span className="text-gray-500 cursor-pointer">
+							Contact
+						</span>
+					</div>
+				</div>
+
+				{/* copyright row */}
+				<div className="border border-black w-full p-4 text-sm text-gray-500 text-center mt-20">
+					© {new Date().getFullYear()} Brixel Technologies. All rights
+					reserved.
+				</div>
+			</div>
 		</div>
 	);
 }

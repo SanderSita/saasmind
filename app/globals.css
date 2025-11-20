@@ -1,6 +1,35 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* font family import local font .otf */
+@font-face {
+	font-family: "CartographCF Regular";
+	src: url("/fonts/cartographcf-regular.otf") format("opentype");
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Analogue Regular";
+	src: url("/fonts/Analogue55Regular.otf") format("opentype");
+	font-style: normal;
+	font-display: swap;
+}
+
+body {
+	font-family: "Analogue Regular", sans-serif;
+	background-color: #eeeeee;
+}
+
+.show-lines {
+	background-color: #eeeeee;
+	background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.game-font {
+	font-family: "CartographCF Regular", sans-serif;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

@@ -764,7 +764,7 @@ const MessageList = React.memo(
 				{selectionText && selectionPos && (
 					<button
 						ref={addBtnRef}
-						className="fixed z-50 bg-slate-900 text-white px-2 py-1 rounded text-sm shadow-lg"
+						className="fixed z-50 bg-slate-900 text-white px-2 py-1 text-sm shadow-lg"
 						style={{
 							top: selectionPos.top,
 							left: selectionPos.left,

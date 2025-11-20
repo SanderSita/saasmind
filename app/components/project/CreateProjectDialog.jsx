@@ -100,7 +100,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onCreate }) {
 							type="text"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							className="w-full rounded-md border px-3 py-2 bg-white text-slate-900"
+							className="w-full border px-3 py-2 bg-white text-slate-900"
 							placeholder="My Great SaaS"
 						/>
 					</div>
@@ -112,7 +112,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onCreate }) {
 						<textarea
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
-							className="w-full rounded-md border px-3 py-2 bg-white text-slate-900 resize-none"
+							className="w-full border px-3 py-2 bg-white text-slate-900 resize-none"
 							rows={3}
 							placeholder="Description of the project. Be as detailed as you'd like."
 						/>
@@ -126,7 +126,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onCreate }) {
 							type="text"
 							value={targetMarket}
 							onChange={(e) => setTargetMarket(e.target.value)}
-							className="w-full rounded-md border px-3 py-2 bg-white text-slate-900"
+							className="w-full border px-3 py-2 bg-white text-slate-900"
 							placeholder="e.g. SMBs, Developers, Enterprise"
 						/>
 					</div>
@@ -138,7 +138,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onCreate }) {
 						<select
 							value={status}
 							onChange={(e) => setStatus(e.target.value)}
-							className="w-full rounded-md border px-3 py-2 bg-white text-slate-900"
+							className="w-full border px-3 py-2 bg-white text-slate-900"
 						>
 							<option value="idea">Idea</option>
 							<option value="development">Development</option>
