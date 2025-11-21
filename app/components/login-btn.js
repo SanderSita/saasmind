@@ -19,7 +19,8 @@ export default function LoginBtn({ btn, isSignin }) {
 						{isSignin ? "Login" : "Get Started"}
 					</DialogTitle>
 					<DialogDescription>
-						Sign in with Google, or use your email and password.
+						Sign {isSignin ? "in" : "up"} with Google, or use your
+						email and password.
 					</DialogDescription>
 				</DialogHeader>
 

@@ -1,5 +1,6 @@
 import { Atom } from "lucide-react";
 import LoginBtn from "./components/login-btn";
+import { Button } from "@/components/ui/button";
 
 export default async function LandingPage() {
 	return (
@@ -10,20 +11,30 @@ export default async function LandingPage() {
 					<Atom className="size-10" />
 					<div className="flex gap-12 ml-8">
 						<span>Product</span>
-						<span>Templates</span>
-						<span>Integrations</span>
-						<span>Docs</span>
+						<span>Usage</span>
 					</div>
 				</div>
 
-				<LoginBtn
-					btn={
-						<div className="bg-slate-900 cursor-pointer text-white px-8 py-4">
-							Get Started
-						</div>
-					}
-					isSignin={false}
-				/>
+				<div className="flex items-center gap-2">
+					<LoginBtn
+						btn={
+							<div className="bg-transparent text-black cursor-pointer px-8 py-4 outline outline-gray-300 -outline-offset-1">
+								Login
+							</div>
+						}
+						isSignin={true}
+					/>
+
+					{/* Signup Button */}
+					<LoginBtn
+						btn={
+							<div className="bg-slate-900 cursor-pointer text-white px-8 py-4">
+								Get Started
+							</div>
+						}
+						isSignin={false}
+					/>
+				</div>
 			</div>
 
 			<div className="w-full h-10 show-lines"></div>
@@ -179,11 +190,16 @@ export default async function LandingPage() {
 
 				{/* Optional CTA */}
 				<div className="flex gap-3 justify-start mt-14 text-xl">
-					<p className="bg-slate-900 cursor-pointer text-white px-8 py-4">
-						<span className="game-font">Start</span> (
-						<span className="fame-font">it</span>'
-						<span className="game-font">s free</span>)
-					</p>
+					<LoginBtn
+						btn={
+							<p className="bg-slate-900 cursor-pointer text-white px-8 py-4">
+								<span className="game-font">Start</span> (
+								<span className="fame-font">it</span>'
+								<span className="game-font">s free</span>)
+							</p>
+						}
+						isSignin={false}
+					/>
 				</div>
 			</div>
 
@@ -218,12 +234,6 @@ export default async function LandingPage() {
 						</span>
 						<span className="text-gray-500 cursor-pointer">
 							Templates
-						</span>
-						<span className="text-gray-500 cursor-pointer">
-							Integrations
-						</span>
-						<span className="text-gray-500 cursor-pointer">
-							Pricing
 						</span>
 					</div>
 
