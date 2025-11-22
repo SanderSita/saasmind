@@ -55,9 +55,9 @@ export function TeamSwitcher({
 					<DropdownMenuTrigger asChild>
 						<SidebarMenuButton
 							size="lg"
-							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+							className=" cursor-pointer border bg-white border-gray-200 data-[state=open]:text-sidebar-accent-foreground hover:bg-white"
 						>
-							<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+							<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center ">
 								{activeProject.logo ? (
 									(() => {
 										const Logo = activeProject.logo;
@@ -81,7 +81,7 @@ export function TeamSwitcher({
 						</SidebarMenuButton>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
-						className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+						className="w-(--radix-dropdown-menu-trigger-width) min-w-56 "
 						align="start"
 						side={isMobile ? "bottom" : "right"}
 						sideOffset={4}
@@ -99,7 +99,7 @@ export function TeamSwitcher({
 								}}
 								className="gap-2 p-2"
 							>
-								<div className="flex size-6 items-center justify-center rounded-md border">
+								<div className="flex size-6 items-center justify-center  border">
 									{project.logo ? (
 										(() => {
 											const ProjectLogo = project.logo;
@@ -127,7 +127,7 @@ export function TeamSwitcher({
 									onCreateProject();
 							}}
 						>
-							<div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
+							<div className="flex size-6 items-center justify-center  border bg-transparent">
 								<Plus className="size-4" />
 							</div>
 							<div className="text-muted-foreground font-medium">

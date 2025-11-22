@@ -152,7 +152,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onCreate }) {
 						<DialogClose>
 							<div
 								type="button"
-								className="px-4 py-2 rounded-md border bg-white"
+								className="px-4 py-2  border bg-white"
 							>
 								Cancel
 							</div>
@@ -161,7 +161,7 @@ export default function CreateProjectDialog({ open, onOpenChange, onCreate }) {
 						<button
 							type="submit"
 							disabled={loading}
-							className="px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-60 cursor-pointer"
+							className="px-4 py-2  bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-60 cursor-pointer"
 						>
 							{loading ? "Creating..." : "Create Project"}
 						</button>

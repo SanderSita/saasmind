@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,15 @@ export default function ProjectContext({ project }) {
 	// customPairs is an array of { key, value }
 	const [customPairs, setCustomPairs] = useState([]);
 	const [error, setError] = useState(null);
+
+	const textareaRef = useRef(null);
+
+	useEffect(() => {
+		if (editing && textareaRef.current) {
+			textareaRef.current.style.height = "auto";
+			textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+		}
+	}, [editing]);
 
 	useEffect(() => {
 		if (project) {
@@ -125,17 +134,18 @@ export default function ProjectContext({ project }) {
 								{project.name}
 							</h1>
 							{!editing ? (
-								<p className="text-sm text-slate-500">
+								<p className="text-sm text-slate-500 whitespace-pre-line">
 									{description || "No description provided."}
 								</p>
 							) : (
 								<textarea
-									className="w-full text-sm text-slate-700 p-2 border rounded-md resize-none"
-									rows={3}
+									className="w-full text-sm text-slate-700 p-2 border resize-none overflow-hidden"
 									value={description}
+									ref={textareaRef}
 									onChange={(e) => {
 										setDescription(e.target.value);
-										// update element height
+
+										// Auto-resize
 										e.target.style.height = "auto";
 										e.target.style.height = `${e.target.scrollHeight}px`;
 									}}
@@ -213,7 +223,7 @@ export default function ProjectContext({ project }) {
 						<h2 className="text-sm text-slate-500 uppercase tracking-wider mb-2">
 							Status
 						</h2>
-						<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
+						<div className="inline-flex items-center gap-2 px-3 py-1  text-sm font-medium bg-slate-100 text-slate-800">
 							{project.status || "unknown"}
 						</div>
 					</section>
@@ -238,7 +248,7 @@ export default function ProjectContext({ project }) {
 										{customPairs.map((p, idx) => (
 											<div
 												key={idx}
-												className="border rounded-md p-4 bg-slate-50"
+												className="border  p-4 bg-slate-50"
 											>
 												<div className="font-semibold text-slate-800 text-lg">
 													{p.key}
@@ -301,16 +311,20 @@ export default function ProjectContext({ project }) {
 												</Button>
 											</div>
 											<textarea
-												className="w-full p-3 border rounded-md resize-y min-h-[120px]"
+												className="w-full p-3 border resize-y min-h-[120px] overflow-hidden"
 												placeholder="Enter detailed context here..."
 												value={pair.value}
-												onChange={(e) =>
+												onChange={(e) => {
 													handlePairChange(
 														idx,
 														"value",
 														e.target.value
-													)
-												}
+													);
+
+													e.target.style.height =
+														"auto";
+													e.target.style.height = `${e.target.scrollHeight}px`;
+												}}
 												rows={6}
 											/>
 										</div>

@@ -71,7 +71,7 @@ function CodeBlock({ children, ...props }) {
 
 			<pre
 				ref={preRef}
-				className="bg-slate-100 p-4 rounded-lg overflow-x-auto"
+				className="bg-slate-100 p-4  overflow-x-auto"
 				{...props}
 			>
 				{children}
@@ -206,12 +206,12 @@ const Message = React.memo(
 				}`}
 			>
 				{/* {message.role === "assistant" && (
-				<div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
+				<div className="w-10 h-10  bg-slate-900 flex items-center justify-center shrink-0">
 					<Bot className="w-5 h-5 text-white" />
 				</div>
 			)} */}
 				<div
-					className={`relative px-6 py-4 rounded-2xl ${
+					className={`relative px-6 py-4  ${
 						message.role === "user"
 							? "bg-slate-900 text-white"
 							: " text-slate-900"
@@ -228,7 +228,7 @@ const Message = React.memo(
 								<img
 									src={message.image_url}
 									alt="attachment"
-									className="rounded-md border-2 max-w-full h-auto object-contain"
+									className=" border-2 max-w-full h-auto object-contain"
 								/>
 							</a>
 						</div>
@@ -388,7 +388,7 @@ const Message = React.memo(
 					{isTyping && (
 						<button
 							onClick={handleSkip}
-							className="absolute top-2 right-2 p-1 rounded-full bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+							className="absolute top-2 right-2 p-1  bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
 							title="Skip typing"
 						>
 							<FastForward className="w-4 h-4 text-slate-600" />
@@ -746,14 +746,14 @@ const MessageList = React.memo(
 				))}
 				{loading && (
 					<div className="flex gap-4 justify-start">
-						{/* <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0">
+						{/* <div className="w-10 h-10  bg-slate-900 flex items-center justify-center shrink-0">
 						<Bot className="w-5 h-5 text-white" />
 					</div> */}
-						<div className="max-w-2xl px-6 py-4 rounded-2xl bg-white border border-slate-200">
+						<div className="max-w-2xl px-6 py-4  bg-white border border-slate-200">
 							<div className="flex gap-2">
-								<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
-								<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-100"></div>
-								<div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-200"></div>
+								<div className="w-2 h-2 bg-slate-400  animate-bounce"></div>
+								<div className="w-2 h-2 bg-slate-400  animate-bounce delay-100"></div>
+								<div className="w-2 h-2 bg-slate-400  animate-bounce delay-200"></div>
 							</div>
 						</div>
 					</div>
@@ -811,13 +811,13 @@ const MessageList = React.memo(
 							</label>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<textarea
-									className="w-full p-3 border rounded-md min-h-[180px]"
+									className="w-full p-3 border  min-h-[180px]"
 									value={dialogContent}
 									onChange={(e) =>
 										setDialogContent(e.target.value)
 									}
 								/>
-								<div className="prose max-w-none overflow-auto p-3 border rounded-md bg-white max-h-[360px]">
+								<div className="prose max-w-none overflow-auto p-3 border  bg-white max-h-[360px]">
 									<ReactMarkdown
 										remarkPlugins={[remarkGfm, remarkMath]}
 										rehypePlugins={[rehypeKatex]}

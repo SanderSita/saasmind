@@ -452,7 +452,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 								growing {project.name}. I remember all our
 								previous conversations!
 							</p>
-							<div className="bg-white rounded-xl p-4 border border-slate-200 text-left space-y-2">
+							<div className="bg-white  p-4 border border-slate-200 text-left space-y-2">
 								<p className="text-sm font-medium text-slate-900">
 									Try asking:
 								</p>
@@ -462,7 +462,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 											"Help me create a marketing strategy"
 										)
 									}
-									className="cursor-pointer block w-full text-left text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-3 py-2 rounded-lg transition-colors"
+									className="cursor-pointer block w-full text-left text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-3 py-2  transition-colors"
 								>
 									"Help me create a marketing strategy"
 								</button>
@@ -472,7 +472,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 											"What features should I build first?"
 										)
 									}
-									className="cursor-pointer block w-full text-left text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-3 py-2 rounded-lg transition-colors"
+									className="cursor-pointer block w-full text-left text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-3 py-2  transition-colors"
 								>
 									"What features should I build first?"
 								</button>
@@ -482,7 +482,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 											"Generate social media post ideas"
 										)
 									}
-									className="cursor-pointer block w-full text-left text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-3 py-2 rounded-lg transition-colors"
+									className="cursor-pointer block w-full text-left text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-3 py-2  transition-colors"
 								>
 									"Generate social media post ideas"
 								</button>
@@ -520,7 +520,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 					}
 				></div>
 				<div
-					className="bg-white border border-slate-200 px-3 py-3 rounded-2xl mb-3 z-50"
+					className="bg-white border border-slate-200 px-3 py-3  mb-3 z-50"
 					onClick={() => inputRef.current.focus()}
 					style={
 						footerPos.width
@@ -540,13 +540,13 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 				>
 					{/* Preview */}
 					{previewUrl && (
-						<Card className="w-full mb-3 flex items-center gap-3 p-2 rounded-xl border bg-muted/30">
+						<Card className="w-full mb-3 flex items-center gap-3 p-2  border bg-muted/30">
 							{/* Thumbnail */}
 							<div className="relative h-12 w-12 shrink-0">
 								<img
 									src={previewUrl}
 									alt="Preview"
-									className="h-12 w-12 rounded-md object-cover"
+									className="h-12 w-12  object-cover"
 								/>
 								<Button
 									size="icon"
@@ -557,7 +557,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 										if (fileInputRef.current)
 											fileInputRef.current.value = "";
 									}}
-									className="absolute -top-1 -right-1 h-4 w-4 rounded-full p-0 cursor-pointer"
+									className="absolute -top-1 -right-1 h-4 w-4  p-0 cursor-pointer"
 								>
 									✕
 								</Button>
@@ -599,9 +599,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 					/>
 					<div
 						className={`flex gap-3 justify-between ${
-							isDragActive
-								? "ring-2 ring-slate-400/40 rounded-xl"
-								: ""
+							isDragActive ? "ring-2 ring-slate-400/40 " : ""
 						}`}
 						onDragEnter={handleDragEnter}
 						onDragOver={handleDragOver}
@@ -615,7 +613,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 							value={model}
 							onValueChange={(val) => setModel(val)}
 						>
-							<SelectTrigger className="shrink-0 p-1 rounded-md border border-slate-300 bg-white focus:ring-2 focus:ring-slate-900/10 outline-none w-40">
+							<SelectTrigger className="shrink-0 p-1  border border-slate-300 bg-white focus:ring-2 focus:ring-slate-900/10 outline-none w-40">
 								<SelectValue placeholder="Select model" />
 							</SelectTrigger>
 							<SelectContent>
@@ -651,7 +649,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 								/>
 								<label
 									htmlFor="chat-image-input"
-									className="cursor-pointer rounded-lg hover:bg-slate-100"
+									className="cursor-pointer  hover:bg-slate-100"
 								>
 									<Image className="w-5 h-5 text-slate-600" />
 								</label>
@@ -660,7 +658,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 							<button
 								onClick={handleSend}
 								disabled={loading || !input.trim()}
-								className="bg-slate-900 text-white p-2.5 rounded-sm hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+								className="bg-slate-900 text-white p-2.5  hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
 							>
 								<Send className="w-3 h-3" />
 							</button>

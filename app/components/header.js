@@ -34,7 +34,7 @@ export default function Header() {
 					{user ? (
 						<Link
 							href="/dashboard"
-							className="bg-slate-900 cursor-pointer text-white px-6 py-2.5 rounded-lg hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl"
+							className="bg-slate-900 cursor-pointer text-white px-6 py-2.5  hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl"
 						>
 							Dashboard
 						</Link>
@@ -50,7 +50,7 @@ export default function Header() {
 							/>
 							<LoginBtn
 								btn={
-									<div className="bg-slate-900 cursor-pointer text-white px-6 py-2.5 rounded-lg hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl">
+									<div className="bg-slate-900 cursor-pointer text-white px-6 py-2.5  hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl">
 										Get Started
 									</div>
 								}

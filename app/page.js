@@ -42,7 +42,7 @@ export default async function LandingPage() {
 			{/* main */}
 			<div className="border border-black w-full flex flex-col justify-center text-center">
 				<div className="flex items-center gap-2 mt-28 text-[12px] justify-center">
-					<div className="bg-black size-2.5 rounded-full shrink-0"></div>
+					<div className="bg-black size-2.5  shrink-0"></div>
 					<span className="tracking-tight leading-none mt-[2px]">
 						NOW USING{" "}
 						<a
@@ -89,7 +89,7 @@ export default async function LandingPage() {
 					</div>
 				</div>
 
-				<img src="/images/hero-1.png" className="mt-26" />
+				<img src="/images/context.png" className="mt-26" />
 			</div>
 
 			<div className="w-full h-10 show-lines"></div>
@@ -100,13 +100,13 @@ export default async function LandingPage() {
 					<p className="text-xl text-gray-400 mt-4">Time to MVP</p>
 				</div>
 				<div className="border-r border-r-black p-7">
-					<p className="text-4xl">{"10,000+"}</p>
+					<p className="text-4xl">{"3,000+"}</p>
 					<p className="text-xl text-gray-400 mt-4">
 						Projects Using SaaSmind
 					</p>
 				</div>
 				<div className="p-7">
-					<p className="text-4xl">{"1B+"}</p>
+					<p className="text-4xl">{"1M+"}</p>
 					<p className="text-xl text-gray-400 mt-4">
 						AI Actions Generated
 					</p>
@@ -116,7 +116,7 @@ export default async function LandingPage() {
 			<div className="border-x border-b border-black w-full">
 				<div className="p-20 ">
 					<div className="flex items-center gap-2 text-[10px]">
-						<div className="bg-black size-2.5 rounded-full shrink-0"></div>
+						<div className="bg-black size-2.5  shrink-0"></div>
 						<span className="tracking-tight leading-none mt-[2px]">
 							USE CASES
 						</span>
@@ -132,13 +132,13 @@ export default async function LandingPage() {
 					</p>
 				</div>
 
-				<img src="/images/hero-1.png" className="w-full" />
+				<img src="/images/chat.png" className="w-full" />
 			</div>
 
 			{/* HOW TO USE SECTION */}
 			<div className="p-20 border-x border-b border-black w-full bg-[#EEEEEE]">
 				<div className="flex items-center gap-2 text-[10px]">
-					<div className="bg-black size-2.5 rounded-full shrink-0"></div>
+					<div className="bg-black size-2.5  shrink-0"></div>
 					<span className="tracking-tight leading-none mt-[2px]">
 						HOW TO USE
 					</span>
@@ -208,7 +208,7 @@ export default async function LandingPage() {
 			<div className="border border-black w-full bg-[#EEEEEE] p-20">
 				{/* small label */}
 				<div className="flex items-center gap-2 text-[10px]">
-					<div className="bg-black size-2.5 rounded-full shrink-0"></div>
+					<div className="bg-black size-2.5  shrink-0"></div>
 					<span className="tracking-tight leading-none mt-[2px]">
 						SAASMIND
 					</span>

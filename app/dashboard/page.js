@@ -281,7 +281,7 @@ export default function Dashboard() {
 								</p>
 								<button
 									onClick={() => setIsProjectModalOpen(true)}
-									className="bg-slate-900 cursor-pointer text-white px-6 py-3 rounded-lg hover:bg-slate-800 transition-all font-medium shadow-lg inline-flex items-center gap-2"
+									className="bg-slate-900 cursor-pointer text-white px-6 py-3  hover:bg-slate-800 transition-all font-medium shadow-lg inline-flex items-center gap-2"
 								>
 									<Plus className="w-5 h-5" />
 									Create Project

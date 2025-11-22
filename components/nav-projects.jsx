@@ -45,7 +45,7 @@ export function NavProjects({ projects, onSelect }) {
 												return <Icon />;
 											})()
 										) : (
-											<div className="size-4 rounded-md bg-slate-200 flex items-center justify-center text-xs">
+											<div className="size-4  bg-slate-200 flex items-center justify-center text-xs">
 												{item.name?.[0]?.toUpperCase()}
 											</div>
 										)}
@@ -65,7 +65,7 @@ export function NavProjects({ projects, onSelect }) {
 								</SidebarMenuAction>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
-								className="w-48 rounded-lg"
+								className="w-48 "
 								side={isMobile ? "bottom" : "right"}
 								align={isMobile ? "end" : "start"}
 							>
