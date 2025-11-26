@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-	title: "SaaSMind",
+	title: "SaaSminder",
 	description: "Your AI Product Manager",
 };
 

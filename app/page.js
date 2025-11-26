@@ -63,7 +63,7 @@ export default async function LandingPage() {
 				</h1>
 
 				<p className="text-md md:text-lg text-gray-500 tracking-tight font-extralight mt-8 md:w-1/2 w-3/4 mx-auto">
-					SaaSmind is an AI teammate for SaaS founders. It remembers
+					SaaSminder is an AI teammate for SaaS founders. It remembers
 					your product context, drafts landing copy, proposes
 					roadmaps, and helps with marketing, so you ship faster.
 				</p>
@@ -106,7 +106,7 @@ export default async function LandingPage() {
 				<div className="border-r border-r-black md:p-7 p-3">
 					<p className="md:text-4xl text-2xl">{"3,000+"}</p>
 					<p className="md:text-xl text-lg text-gray-400 mt-4">
-						Projects Using SaaSmind
+						Projects Using SaaSminder
 					</p>
 				</div>
 				<div className="md:p-7 p-3">
@@ -126,11 +126,11 @@ export default async function LandingPage() {
 						</span>
 					</div>
 					<h2 className="text-5xl md:text-8xl tracking-tighter mt-10">
-						What SaaS Founders<br></br>Build with SaaSmind
+						What SaaS Founders<br></br>Build with SaaSminder
 					</h2>
 					<p className="md:text-xl text-md text-gray-400 font-extralight mt-8 lea">
 						Idea validation, launch copy, growth experiments, and
-						product docs.<br></br>SaaSmind keeps your product
+						product docs.<br></br>SaaSminder keeps your product
 						context in one place so you move faster and ship with
 						clarity.
 					</p>
@@ -156,7 +156,7 @@ export default async function LandingPage() {
 				</h2>
 
 				<p className="md:text-xl text-md text-gray-400 font-extralight mt-8">
-					Add your project, add a few notes, and ask SaaSmind to
+					Add your project, add a few notes, and ask SaaSminder to
 					generate landing copy, feature ideas, marketing plans, and
 					more.
 				</p>
@@ -170,7 +170,7 @@ export default async function LandingPage() {
 							Add Your Product
 						</p>
 						<p className="text-gray-500 mt-4 text-lg font-extralight">
-							Tell SaaSmind about your product: paste a
+							Tell SaaSminder about your product: paste a
 							description or any existing copy.
 						</p>
 					</div>
@@ -221,7 +221,7 @@ export default async function LandingPage() {
 				<div className="flex items-center gap-2 text-[10px]">
 					<div className="bg-black size-2.5  shrink-0"></div>
 					<span className="tracking-tight leading-none mt-[2px]">
-						SAASMIND
+						SaaSminder
 					</span>
 				</div>
 
@@ -230,7 +230,7 @@ export default async function LandingPage() {
 					{/* Column 1 - Brand */}
 					<div className="flex flex-col gap-3">
 						<span className="text-3xl tracking-tight">
-							SaaSmind
+							SaaSminder
 						</span>
 						<p className="text-gray-500 text-sm font-extralight mt-2">
 							An AI teammate for SaaS founders
@@ -276,7 +276,8 @@ export default async function LandingPage() {
 
 				{/* copyright row */}
 				<div className="border border-black w-full p-4 text-sm text-gray-500 text-center mt-20">
-					© {new Date().getFullYear()} SaaSmind. All rights reserved.
+					© {new Date().getFullYear()} SaaSminder. All rights
+					reserved.
 				</div>
 			</div>
 		</div>

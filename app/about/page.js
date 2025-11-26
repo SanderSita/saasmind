@@ -50,11 +50,11 @@ export default async function AboutPage() {
 				</div>
 
 				<h1 className="text-5xl md:text-6xl tracking-tighter mt-6">
-					About SaaSmind
+					About SaaSminder
 				</h1>
 
 				<p className="text-md md:text-lg text-gray-500 tracking-tight font-extralight mt-6 md:w-1/2 w-3/4 mx-auto">
-					SaaSmind is an AI teammate built for SaaS founders and
+					SaaSminder is an AI teammate built for SaaS founders and
 					teams. We combine your product context with powerful LLMs so
 					you get tailored copy, product ideas, and growth
 					experiments, all in one workspace.
@@ -66,7 +66,7 @@ export default async function AboutPage() {
 					</h2>
 					<p className="text-gray-500 mt-4 text-lg font-extralight">
 						I believe founders should spend time building, not
-						rewriting docs or hunting for context. SaaSmind
+						rewriting docs or hunting for context. SaaSminder
 						remembers what matters to your product and helps you
 						ship with clarity and speed.
 					</p>
@@ -147,14 +147,14 @@ export default async function AboutPage() {
 				<div className="flex items-center gap-2 text-[10px]">
 					<div className="bg-black size-2.5  shrink-0"></div>
 					<span className="tracking-tight leading-none mt-0.5">
-						SAASMIND
+						SaaSminder
 					</span>
 				</div>
 
 				<div className="grid md:grid-cols-4 grid-cols-2 gap-10 mt-12 text-lg">
 					<div className="flex flex-col gap-3">
 						<span className="text-3xl tracking-tight">
-							SaaSmind
+							SaaSminder
 						</span>
 						<p className="text-gray-500 text-sm font-extralight mt-2">
 							An AI teammate for SaaS founders
@@ -202,7 +202,8 @@ export default async function AboutPage() {
 				</div>
 
 				<div className="border border-black w-full p-4 text-sm text-gray-500 text-center mt-20">
-					© {new Date().getFullYear()} SaaSmind. All rights reserved.
+					© {new Date().getFullYear()} SaaSminder. All rights
+					reserved.
 				</div>
 			</div>
 		</div>

@@ -13,7 +13,7 @@ export default function Header() {
 				<Link href="/" className="flex items-center gap-2">
 					<img src="/logo.svg" className="w-12 h-12" alt="logo" />
 					<span className="text-xl font-bold text-slate-900">
-						SaaSMind
+						SaaSminder
 					</span>
 				</Link>
 				<div className="hidden md:flex items-center gap-8">
