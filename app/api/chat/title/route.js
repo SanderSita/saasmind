@@ -8,7 +8,7 @@ export async function POST(request) {
 		const prompt = {
 			role: "user",
 			content:
-				"Provide a concise title (6 words max) that summarizes this conversation in the language used. Return only the title, no extra commentary. Default to 'Untitled Chat' if unable to generate a title. Dont mention that it's a title.",
+				"You are a clever, concise naming assistant. Given the user’s first message below, invent a short, catchy name for this conversation. The name should be 2‑5 words long, title‑cased, and must capture the main intent or topic of the message.  Return **only the name** – no quotes, no punctuation other than normal title caps, no extra whitespace.",
 		};
 
 		const msgs = [...(messages || []), prompt];
