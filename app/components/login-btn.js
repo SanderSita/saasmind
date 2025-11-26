@@ -8,8 +8,63 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "./ui/dialog";
+import { useState } from "react";
+import { supabase } from "@/utils/supabase/client";
 
 export default function LoginBtn({ btn, isSignin }) {
+	const [googleLoading, setGoogleLoading] = useState(false);
+
+	const handleGoogleSignup = async () => {
+		try {
+			setGoogleLoading(true);
+			const { data, error } = await supabase.auth.signInWithOAuth({
+				provider: "google",
+				options: {
+					redirectTo: `${window.location.origin}/auth/v1/callback?next=/dashboard`,
+				},
+			});
+			if (error) {
+				toast.error(error.message);
+				setGoogleLoading(false);
+				return;
+			}
+			if (data?.url) {
+				window.location.href = data.url;
+			} else {
+				setGoogleLoading(false);
+			}
+		} catch (err) {
+			console.error(err);
+			toast.error("Unable to start Google sign up");
+			setGoogleLoading(false);
+		}
+	};
+
+	const handleGoogleLogin = async () => {
+		try {
+			setGoogleLoading(true);
+			const { data, error } = await supabase.auth.signInWithOAuth({
+				provider: "google",
+				options: {
+					redirectTo: `${window.location.origin}/auth/v1/callback?next=/dashboard`,
+				},
+			});
+			if (error) {
+				toast.error(error.message);
+				setGoogleLoading(false);
+				return;
+			}
+			if (data?.url) {
+				window.location.href = data.url;
+			} else {
+				setGoogleLoading(false);
+			}
+		} catch (err) {
+			toast.error("Unable to start Google login");
+			setGoogleLoading(false);
+		}
+	};
+
 	return (
 		<Dialog>
 			<DialogTrigger>{btn}</DialogTrigger>
@@ -28,18 +83,20 @@ export default function LoginBtn({ btn, isSignin }) {
 					{/* Google sign-in (shadcn Button) */}
 					<button
 						type="button"
-						className="inline-flex cursor-pointer items-center justify-center border px-3 py-2 text-sm font-medium hover:bg-muted"
-						onClick={() => {
-							// replace with your real OAuth endpoint
-							window.location.href = "/api/auth/google";
-						}}
+						onClick={
+							isSignin ? handleGoogleLogin : handleGoogleSignup
+						}
+						disabled={googleLoading}
+						className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition duration-200 disabled:opacity-50 cursor-pointer mb-6 flex items-center justify-center gap-2"
 					>
-						<img
-							src="/google.svg"
-							alt="Google Logo"
-							className="mr-2 h-4 w-4"
-						/>
-						Continue with Google
+						{googleLoading ? null : (
+							<img
+								src="/svg/google.svg"
+								alt="Google"
+								className="w-5 h-5"
+							/>
+						)}
+						{googleLoading ? "Redirecting..." : "Login with Google"}
 					</button>
 
 					{/* separator */}
