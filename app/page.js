@@ -240,12 +240,18 @@ export default async function LandingPage() {
 					{/* Column 2 */}
 					<div className="flex flex-col gap-1">
 						<p className="text-xl tracking-tight">Product</p>
-						<span className="text-gray-500 cursor-pointer mt-2">
+						<a
+							href="#product"
+							className="text-gray-500 cursor-pointer mt-2"
+						>
 							Use Cases
-						</span>
-						<span className="text-gray-500 cursor-pointer">
+						</a>
+						<a
+							href="#usage"
+							className="text-gray-500 cursor-pointer"
+						>
 							How to Use
-						</span>
+						</a>
 					</div>
 
 					{/* Column 3 */}
