@@ -8,58 +8,49 @@ export default function Header() {
 	const user = useUser();
 
 	return (
-		<nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-			<div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-				<Link href="/" className="flex items-center gap-2">
-					<img src="/logo.svg" className="w-12 h-12" alt="logo" />
-					<span className="text-xl font-bold text-slate-900">
-						SaaSminder
-					</span>
+		<div className="w-full p-3 border border-black flex justify-between items-center md:text-xl text-lg">
+			<div className="flex gap-2 md:ml-2 items-center cursor-pointer">
+				{/* <Atom className="size-10" /> */}
+				<Link href="/">
+					<img src="/logo.svg" className="w-14 h-14" alt="logo" />
 				</Link>
-				<div className="hidden md:flex items-center gap-8">
-					<a
-						href="#features"
-						className="text-slate-600 hover:text-slate-900 transition-colors font-medium"
-					>
-						Features
-					</a>
-					<a
-						href="#how-it-works"
-						className="text-slate-600 hover:text-slate-900 transition-colors font-medium"
-					>
-						How it Works
-					</a>
-				</div>
-				<div className="flex items-center gap-4">
-					{user ? (
-						<Link
-							href="/dashboard"
-							className="bg-slate-900 cursor-pointer text-white px-6 py-2.5  hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl"
-						>
-							Dashboard
-						</Link>
-					) : (
-						<>
-							<LoginBtn
-								btn={
-									<div className="text-slate-600 cursor-pointer hover:text-slate-900 transition-colors font-medium">
-										Sign In
-									</div>
-								}
-								isSignin={true}
-							/>
-							<LoginBtn
-								btn={
-									<div className="bg-slate-900 cursor-pointer text-white px-6 py-2.5  hover:bg-slate-800 transition-all font-medium shadow-lg shadow-slate-900/10 hover:shadow-xl">
-										Get Started
-									</div>
-								}
-								isSignin={false}
-							/>
-						</>
-					)}
+
+				<div className="gap-12 ml-8 hidden md:flex">
+					<a href="#product">Product</a>
+					<a href="#usage">Usage</a>
 				</div>
 			</div>
-		</nav>
+
+			{user ? (
+				<div className="flex items-center gap-2">
+					<Link href="/dashboard">
+						<div className="bg-slate-900 cursor-pointer text-white md:px-8 px-4 md:py-4 py-2">
+							Dashboard
+						</div>
+					</Link>
+				</div>
+			) : (
+				<div className="flex items-center gap-2">
+					<LoginBtn
+						btn={
+							<div className="bg-transparent text-black cursor-pointer md:px-8 md:py-4 md:outline md:outline-gray-300 -outline-offset-1">
+								Login
+							</div>
+						}
+						isSignin={true}
+					/>
+
+					{/* Signup Button */}
+					<LoginBtn
+						btn={
+							<div className="bg-slate-900 cursor-pointer text-white md:px-8 px-4 md:py-4 py-2">
+								Get Started
+							</div>
+						}
+						isSignin={false}
+					/>
+				</div>
+			)}
+		</div>
 	);
 }

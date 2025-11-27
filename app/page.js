@@ -1,43 +1,12 @@
-import { Atom } from "lucide-react";
 import LoginBtn from "./components/login-btn";
-import { Button } from "@/components/ui/button";
+import Footer from "./components/footer";
+import Header from "./components/header";
 
 export default async function LandingPage() {
 	return (
 		<div className="bg-[#EEEEEE] md:p-8 p-2 min-h-screen">
 			{/* header */}
-			<div className="w-full p-3 border border-black flex justify-between items-center md:text-xl text-lg">
-				<div className="flex gap-2 md:ml-2 items-center">
-					{/* <Atom className="size-10" /> */}
-					<img src="/logo.svg" className="w-14 h-14" alt="logo" />
-
-					<div className="gap-12 ml-8 hidden md:flex">
-						<a href="#product">Product</a>
-						<a href="#usage">Usage</a>
-					</div>
-				</div>
-
-				<div className="flex items-center gap-2">
-					<LoginBtn
-						btn={
-							<div className="bg-transparent text-black cursor-pointer md:px-8 md:py-4 md:outline md:outline-gray-300 -outline-offset-1">
-								Login
-							</div>
-						}
-						isSignin={true}
-					/>
-
-					{/* Signup Button */}
-					<LoginBtn
-						btn={
-							<div className="bg-slate-900 cursor-pointer text-white md:px-8 px-4 md:py-4 py-2">
-								Get Started
-							</div>
-						}
-						isSignin={false}
-					/>
-				</div>
-			</div>
+			<Header />
 
 			<div className="w-full h-10 show-lines"></div>
 
@@ -215,77 +184,7 @@ export default async function LandingPage() {
 			</div>
 
 			{/* FOOTER */}
-			<div className="w-full h-10 show-lines"></div>
-			<div className="border border-black w-full bg-[#EEEEEE] md:p-20 p-10">
-				{/* small label */}
-				<div className="flex items-center gap-2 text-[10px]">
-					<div className="bg-black size-2.5  shrink-0"></div>
-					<span className="tracking-tight leading-none mt-[2px]">
-						SaaSminder
-					</span>
-				</div>
-
-				{/* main footer grid */}
-				<div className="grid md:grid-cols-4 grid-cols-2 gap-10 mt-12 text-lg">
-					{/* Column 1 - Brand */}
-					<div className="flex flex-col gap-3">
-						<span className="text-3xl tracking-tight">
-							SaaSminder
-						</span>
-						<p className="text-gray-500 text-sm font-extralight mt-2">
-							An AI teammate for SaaS founders
-						</p>
-					</div>
-
-					{/* Column 2 */}
-					<div className="flex flex-col gap-1">
-						<p className="text-xl tracking-tight">Product</p>
-						<a
-							href="#product"
-							className="text-gray-500 cursor-pointer mt-2"
-						>
-							Use Cases
-						</a>
-						<a
-							href="#usage"
-							className="text-gray-500 cursor-pointer"
-						>
-							How to Use
-						</a>
-					</div>
-
-					{/* Column 3 */}
-					<div className="flex flex-col gap-1">
-						<p className="text-xl tracking-tight">Resources</p>
-						<span className="text-gray-500 cursor-pointer mt-2">
-							Privacy Policy
-						</span>
-						<span className="text-gray-500 cursor-pointer">
-							Terms of Service
-						</span>
-					</div>
-
-					{/* Column 4 */}
-					<div className="flex flex-col gap-1">
-						<p className="text-xl tracking-tight">Company</p>
-						<a
-							href="/about"
-							className="text-gray-500 cursor-pointer mt-2"
-						>
-							About
-						</a>
-						<span className="text-gray-500 cursor-pointer">
-							Contact
-						</span>
-					</div>
-				</div>
-
-				{/* copyright row */}
-				<div className="border border-black w-full p-4 text-sm text-gray-500 text-center mt-20">
-					© {new Date().getFullYear()} SaaSminder. All rights
-					reserved.
-				</div>
-			</div>
+			<Footer />
 		</div>
 	);
 }

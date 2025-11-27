@@ -8,11 +8,14 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "./ui/dialog";
-import { useState } from "react";
+import { useState, cloneElement } from "react";
 import { supabase } from "@/utils/supabase/client";
+import { useUser } from "@/context/UserContext";
 
 export default function LoginBtn({ btn, isSignin }) {
 	const [googleLoading, setGoogleLoading] = useState(false);
+
+	const user = useUser();
 
 	const handleGoogleSignup = async () => {
 		try {
@@ -64,6 +67,15 @@ export default function LoginBtn({ btn, isSignin }) {
 			setGoogleLoading(false);
 		}
 	};
+	if (user) {
+		// Return a cloned button element with an onClick that preserves any existing handler
+		// and then navigates to the dashboard.
+		return cloneElement(btn, {
+			onClick: (e) => {
+				window.location.href = "/dashboard";
+			},
+		});
+	}
 
 	return (
 		<Dialog>
