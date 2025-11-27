@@ -42,7 +42,12 @@ export default function Dashboard() {
 
 	const loadProjects = async () => {
 		try {
-			const { data, error } = await supabase.from("projects").select("*");
+			if (!user?.id) return;
+
+			const { data, error } = await supabase
+				.from("projects")
+				.select("*")
+				.eq("user_id", user.id);
 
 			if (error) throw error;
 			setProjects(data || []);
