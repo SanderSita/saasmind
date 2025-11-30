@@ -11,6 +11,8 @@ import {
 import { useState, cloneElement } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { useUser } from "@/context/UserContext";
+import Link from "next/link";
+import { toast } from "sonner";
 
 export default function LoginBtn({ btn, isSignin }) {
 	const [googleLoading, setGoogleLoading] = useState(false);
@@ -28,6 +30,7 @@ export default function LoginBtn({ btn, isSignin }) {
 			});
 			if (error) {
 				toast.error(error.message);
+
 				setGoogleLoading(false);
 				return;
 			}
@@ -70,11 +73,7 @@ export default function LoginBtn({ btn, isSignin }) {
 	if (user) {
 		// Return a cloned button element with an onClick that preserves any existing handler
 		// and then navigates to the dashboard.
-		return cloneElement(btn, {
-			onClick: (e) => {
-				window.location.href = "/dashboard";
-			},
-		});
+		return <Link href="/dashboard">{cloneElement(btn)}</Link>;
 	}
 
 	return (
@@ -99,7 +98,7 @@ export default function LoginBtn({ btn, isSignin }) {
 							isSignin ? handleGoogleLogin : handleGoogleSignup
 						}
 						disabled={googleLoading}
-						className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition duration-200 disabled:opacity-50 cursor-pointer mb-6 flex items-center justify-center gap-2"
+						className="w-full border border-gray-300 text-gray-700 py-2 px-4 hover:bg-gray-50 transition duration-200 disabled:opacity-50 cursor-pointer mb-6 flex items-center justify-center gap-2"
 					>
 						{googleLoading ? null : (
 							<img
@@ -132,7 +131,7 @@ export default function LoginBtn({ btn, isSignin }) {
 							const password = form.password.value;
 
 							if (!email || !password) {
-								alert("Please enter both email and password.");
+								toast.error("Email and password are required.");
 								return;
 							}
 
@@ -157,10 +156,10 @@ export default function LoginBtn({ btn, isSignin }) {
 									window.location.assign("/dashboard");
 								} else {
 									const text = await res.text();
-									alert(text || "Login failed");
+									toast.error(text || "Login failed");
 								}
 							} catch (err) {
-								alert("Network error");
+								toast.error("Network error");
 							}
 						}}
 						className="grid gap-3"

@@ -15,7 +15,7 @@ export async function POST(req) {
 
 	// create user profile in the database
 	const { error: profileError } = await supabase
-		.from("profiles")
+		.from("users")
 		.insert([{ auth_id: data.user.id, email: data.user.email }]);
 
 	if (profileError) {

@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 import { UserProvider } from "@/context/UserContext";
 import { createClient } from "@/utils/supabase/server";
 import { useUser } from "@/utils/supabase/server";
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }) {
 			>
 				<UserProvider initialUser={userData ?? undefined}>
 					{children}
+					<Toaster />
 				</UserProvider>
 			</body>
 		</html>

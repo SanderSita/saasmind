@@ -15,16 +15,16 @@ export function UserProvider({ children, initialUser }) {
 				data: { session },
 			} = await supabase.auth.getSession();
 			if (session?.user) {
-				const { data: profile } = await supabase
-					.from("users")
-					.select("*")
-					.eq("auth_id", session.user.id)
-					.single();
+				// const { data: profile } = await supabase
+				// 	.from("users")
+				// 	.select("*")
+				// 	.eq("auth_id", session.user.id)
+				// 	.single();
 
 				setUser({
 					id: session.user.id,
 					email: session.user.email ?? null,
-					profile,
+					// profile,
 				});
 			}
 		};
