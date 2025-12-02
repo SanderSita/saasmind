@@ -16,6 +16,7 @@ import { toast } from "sonner";
 
 export default function LoginBtn({ btn, isSignin }) {
 	const [googleLoading, setGoogleLoading] = useState(false);
+	const [formLoading, setFormLoading] = useState(false);
 
 	const user = useUser();
 
@@ -97,8 +98,8 @@ export default function LoginBtn({ btn, isSignin }) {
 						onClick={
 							isSignin ? handleGoogleLogin : handleGoogleSignup
 						}
-						disabled={googleLoading}
-						className="w-full border border-gray-300 text-gray-700 py-2 px-4 hover:bg-gray-50 transition duration-200 disabled:opacity-50 cursor-pointer mb-6 flex items-center justify-center gap-2"
+						disabled={googleLoading || formLoading}
+						className="w-full border border-gray-300 text-gray-700 py-2 px-4 hover:bg-gray-50 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed mb-6 flex items-center justify-center gap-2"
 					>
 						{googleLoading ? null : (
 							<img
@@ -136,6 +137,7 @@ export default function LoginBtn({ btn, isSignin }) {
 							}
 
 							try {
+								setFormLoading(true);
 								const res = await fetch(
 									isSignin
 										? "/api/auth/login"
@@ -153,13 +155,16 @@ export default function LoginBtn({ btn, isSignin }) {
 								);
 
 								if (res.ok) {
+									setFormLoading(false);
 									window.location.assign("/dashboard");
 								} else {
 									const text = await res.text();
 									toast.error(text || "Login failed");
+									setFormLoading(false);
 								}
 							} catch (err) {
 								toast.error("Network error");
+								setFormLoading(false);
 							}
 						}}
 						className="grid gap-3"
@@ -176,7 +181,8 @@ export default function LoginBtn({ btn, isSignin }) {
 								name="email"
 								type="email"
 								required
-								className="w-full border px-3 py-2 text-sm"
+								disabled={formLoading}
+								className="w-full border px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 							/>
 						</div>
 
@@ -192,16 +198,24 @@ export default function LoginBtn({ btn, isSignin }) {
 								name="password"
 								type="password"
 								required
-								className="w-full border px-3 py-2 text-sm"
+								disabled={formLoading}
+								className="w-full border px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 							/>
 						</div>
 
 						<div>
 							<button
 								type="submit"
-								className="w-full cursor-pointer bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-95"
+								disabled={formLoading}
+								className="w-full cursor-pointer bg-primary px-3 py-2 text-sm font-medium text-white hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								{isSignin ? "Sign in" : "Create Account"}
+								{formLoading
+									? isSignin
+										? "Signing in..."
+										: "Creating account..."
+									: isSignin
+									? "Sign in"
+									: "Create Account"}
 							</button>
 						</div>
 					</form>
