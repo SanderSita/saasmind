@@ -206,7 +206,7 @@ export default function Chat({ project, selectedChat, onChatSaved }) {
 						},
 						{
 							chat_id: createdChat.id,
-							user_id: null,
+							user_id: localUserMsg.user_id,
 							role: localAiMsg.role,
 							content: localAiMsg.content,
 							created_at: localAiMsg.created_at,
