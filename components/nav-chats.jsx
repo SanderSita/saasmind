@@ -143,6 +143,7 @@ export function NavChats({
 								<DropdownMenuSeparator />
 								<DropdownMenuItem
 									onClick={(e) => openConfirm(e, chat)}
+									data-variant="destructive"
 								>
 									<Trash2 className="text-muted-foreground" />
 									<span>Delete Chat</span>
