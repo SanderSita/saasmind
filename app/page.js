@@ -73,13 +73,13 @@ export default async function LandingPage() {
 					</p>
 				</div>
 				<div className="border-r border-r-black md:p-7 p-3">
-					<p className="md:text-4xl text-2xl">{"3,000+"}</p>
+					<p className="md:text-4xl text-2xl">{"300+"}</p>
 					<p className="md:text-xl text-lg text-gray-400 mt-4">
 						Projects Using SaaSminder
 					</p>
 				</div>
 				<div className="md:p-7 p-3">
-					<p className="md:text-4xl text-2xl">{"1M+"}</p>
+					<p className="md:text-4xl text-2xl">{"50K+"}</p>
 					<p className="md:text-xl text-lg text-gray-400 mt-4">
 						AI Actions Generated
 					</p>
