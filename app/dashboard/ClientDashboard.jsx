@@ -8,7 +8,7 @@ import CreateProjectDialog from "../components/project/CreateProjectDialog";
 import Chat from "../components/chat/Chat";
 import { AppSidebar } from "@/components/app-sidebar";
 import ProjectContext from "@/components/project/ProjectContext";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function ClientDashboard({
 	initialProjects = [],
@@ -224,6 +224,10 @@ export default function ClientDashboard({
 	return (
 		// add top padding to avoid overlap with the fixed global header
 		<SidebarProvider>
+			{/* Mobile: top-left toggle for sidebar */}
+			<div className="fixed top-2 left-2 z-50 md:hidden">
+				<SidebarTrigger />
+			</div>
 			<div className="min-h-screen bg-slate-50 flex w-full">
 				<AppSidebar
 					user={{ name: user?.email, email: user?.email }}
