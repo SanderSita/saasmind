@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { sendWelcomeEmail } from "@/utils/resend/resend";
 
 export async function GET(request) {
 	const requestUrl = new URL(request.url);
@@ -26,5 +27,13 @@ export async function GET(request) {
 	pendingCookies.forEach(({ name, value, options }) => {
 		response.cookies.set(name, value, options);
 	});
+
+	// send welcome email to new users
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	await sendWelcomeEmail(user.email);
+
 	return response;
 }
