@@ -12,7 +12,7 @@ export default function Header() {
 			<div className="flex gap-2 md:ml-2 items-center cursor-pointer">
 				{/* <Atom className="size-10" /> */}
 				<Link href="/">
-					<img src="/logo.svg" className="w-14 h-14" alt="logo" />
+					<img src="/logo.png" className="size-10" alt="logo" />
 				</Link>
 
 				<div className="gap-12 ml-8 hidden md:flex">
