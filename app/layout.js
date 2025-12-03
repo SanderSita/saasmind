@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { UserProvider } from "@/context/UserContext";
 import { createClient } from "@/utils/supabase/server";
 import { useUser } from "@/utils/supabase/server";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -48,6 +49,7 @@ export default async function RootLayout({ children }) {
 					<Toaster />
 				</UserProvider>
 			</body>
+			<Analytics />
 		</html>
 	);
 }
