@@ -12,7 +12,7 @@ export default function Footer() {
 				</div>
 
 				{/* main footer grid */}
-				<div className="grid md:grid-cols-4 grid-cols-2 gap-10 mt-12 text-lg">
+				<div className="grid md:grid-cols-4 grid-cols-1 gap-10 mt-12 text-lg">
 					{/* Column 1 - Brand */}
 					<div className="flex flex-col gap-3">
 						<span className="text-3xl tracking-tight">
@@ -66,9 +66,12 @@ export default function Footer() {
 						>
 							About
 						</a>
-						<span className="text-gray-500 cursor-pointer">
-							Contact
-						</span>
+						<a
+							href="mailto:info@saasminder.com"
+							className="text-gray-500 cursor-pointer"
+						>
+							info@saasminder.com
+						</a>
 					</div>
 				</div>
 
