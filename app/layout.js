@@ -19,6 +19,32 @@ const geistMono = Geist_Mono({
 export const metadata = {
 	title: "SaaSminder",
 	description: "Your AI Product Manager",
+	openGraph: {
+		title: "SaaSminder",
+		description: "Your AI Product Manager",
+		type: "website",
+		url: `${process.env.NEXT_PUBLIC_SITE_URL || ""}`,
+		siteName: "SaaSminder",
+		images: [
+			{
+				url: `${process.env.NEXT_PUBLIC_SITE_URL || ""}/logo.png`,
+				width: 1200,
+				height: 630,
+				alt: "SaaSminder logo",
+			},
+		],
+		locale: "en_US",
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "SaaSminder",
+		description: "Your AI Product Manager",
+		images: [`${process.env.NEXT_PUBLIC_SITE_URL || ""}/logo.png`],
+	},
+	icons: {
+		icon: "/logo.png",
+		apple: "/logo.png",
+	},
 };
 
 export default async function RootLayout({ children }) {
