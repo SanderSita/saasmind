@@ -47,8 +47,11 @@ export default async function LandingPage() {
 						isSignin={false}
 					/>
 
-					<div className="relative inline-flex px-10 py-3 game-font cursor-pointer w-full md:w-auto">
-						<span className="my-auto mx-auto">Read Docs</span>
+					<a
+						href="#usage"
+						className="relative inline-flex px-10 py-3 game-font cursor-pointer w-full md:w-auto"
+					>
+						<span className="my-auto mx-auto">Learn More</span>
 
 						{/* corners */}
 						<span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-black z-20"></span>
@@ -57,7 +60,7 @@ export default async function LandingPage() {
 						<span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-black z-20"></span>
 
 						<span className="absolute w-full bottom-0 left-0 border h-full border-gray-300"></span>
-					</div>
+					</a>
 				</div>
 
 				<img src="/images/context.png" className="mt-26" />
