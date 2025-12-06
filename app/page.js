@@ -10,6 +10,20 @@ export default async function LandingPage() {
 
 			<div className="w-full h-10 show-lines"></div>
 
+			<a
+				href="https://www.producthunt.com/products/saasminder?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-saasminder"
+				target="_blank"
+				className="fixed bottom-5 right-5"
+			>
+				<img
+					src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1046284&theme=light&t=1764934596053"
+					alt="SaaSminder - Chat&#0032;with&#0032;AI&#0032;that&#0032;remembers&#0032;your&#0032;SaaS | Product Hunt"
+					style={{ width: "250px", height: "54px" }}
+					width="250"
+					height="54"
+				/>
+			</a>
+
 			{/* main */}
 			<div className="border border-black w-full flex flex-col justify-center text-center">
 				<div className="flex items-center gap-2 md:mt-28 mt-14 text-[12px] justify-center">
