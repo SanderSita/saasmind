@@ -42,7 +42,7 @@ export default async function LandingPage() {
 				</div>
 
 				<h1 className="text-5xl md:text-8xl tracking-tighter mt-10">
-					Talk to AI that<br></br>knows your SaaS
+					Chat with AI that<br></br>knows your SaaS
 				</h1>
 
 				<p className="text-md md:text-lg text-gray-500 tracking-tight font-extralight mt-8 md:w-1/2 w-3/4 mx-auto">
