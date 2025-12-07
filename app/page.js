@@ -13,7 +13,7 @@ export default async function LandingPage() {
 			<a
 				href="https://www.producthunt.com/products/saasminder?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-saasminder"
 				target="_blank"
-				className="fixed bottom-5 right-5"
+				className="fixed bottom-5 right-5 z-50"
 			>
 				<img
 					src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1046284&theme=light&t=1764934596053"
