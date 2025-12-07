@@ -1,6 +1,7 @@
 import LoginBtn from "./components/login-btn";
 import Footer from "./components/footer";
 import Header from "./components/header";
+import Image from "next/image";
 
 export default async function LandingPage() {
 	return (
@@ -77,7 +78,13 @@ export default async function LandingPage() {
 					</a>
 				</div>
 
-				<img src="/images/context.png" className="mt-26" />
+				<Image
+					src="/images/context.png"
+					className="mt-26"
+					width={1920}
+					height={1080}
+					alt="SaaSminder Contextual AI"
+				/>
 			</div>
 
 			<div className="w-full h-10 show-lines"></div>
@@ -122,7 +129,13 @@ export default async function LandingPage() {
 					</p>
 				</div>
 
-				<img src="/images/chat.png" className="w-full" />
+				<Image
+					src="/images/chat.png"
+					className="w-full"
+					alt="Chat with SaaSminder"
+					width={1920}
+					height={1080}
+				/>
 			</div>
 
 			{/* HOW TO USE SECTION */}
